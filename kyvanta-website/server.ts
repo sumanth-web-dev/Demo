@@ -1,7 +1,15 @@
 import type { Plugin } from 'vite'
+import { config } from 'dotenv'
+import { fileURLToPath } from 'url'
+import { dirname, resolve } from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+config({ path: resolve(__dirname, '.env') })
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || ''
-const GROQ_MODEL = 'openai/gpt-oss-120b'
+const GROQ_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b'
 
 const SYSTEM_PROMPT = `You are Kyvanta AI, the official assistant for Kyvanta Innovation Pvt. Ltd.
 
