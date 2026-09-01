@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
 import { readFileSync, writeFileSync } from 'fs'
-import { randomUUID } from 'crypto'
+import { randomUUID, createHash } from 'crypto'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -12,6 +12,8 @@ config({ path: resolve(__dirname, '.env') })
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || ''
 const GROQ_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b'
+const ADMIN_USER = process.env.ADMIN_USER || ''
+const ADMIN_PASS_HASH = process.env.ADMIN_PASS_HASH || ''
 
 const SUBMISSIONS_PATH = resolve(__dirname, 'data', 'submissions.json')
 
@@ -102,6 +104,39 @@ export function chatProxyPlugin(): Plugin {
   return {
     name: 'chat-proxy',
     configureServer(server) {
+      // ─── Login API ─────────────────────────────────────
+      server.middlewares.use('/api/login', async (req, res) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405
+          res.end(JSON.stringify({ error: 'Method not allowed' }))
+          return
+        }
+
+        let body = ''
+        for await (const chunk of req) {
+          body += chunk
+        }
+
+        try {
+          const { username, password } = JSON.parse(body)
+          const passHash = createHash('sha256').update(password).digest('hex')
+
+          if (username === ADMIN_USER && passHash === ADMIN_PASS_HASH) {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ success: true }))
+          } else {
+            res.statusCode = 401
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ error: 'Invalid credentials.' }))
+          }
+        } catch {
+          res.statusCode = 400
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: 'Invalid request body.' }))
+        }
+      })
+
+      // ─── Chat Proxy ────────────────────────────────────
       server.middlewares.use('/api/chat', async (req, res) => {
         if (req.method !== 'POST') {
           res.statusCode = 405

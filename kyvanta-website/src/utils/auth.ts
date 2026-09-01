@@ -5,28 +5,20 @@ const LOCKOUT_KEY = 'kyvanta_admin_lockout'
 const MAX_ATTEMPTS = 5
 const LOCKOUT_MS = 60_000
 
-async function sha256(input: string): Promise<string> {
-  const data = new TextEncoder().encode(input)
-  const hash = await crypto.subtle.digest('SHA-256', data)
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
 export async function checkCredentials(
   username: string,
   password: string,
 ): Promise<boolean> {
-  const envUser = import.meta.env.VITE_ADMIN_USER as string | undefined
-  const envHash = import.meta.env.VITE_ADMIN_PASS_HASH as string | undefined
-
-  if (!envUser || !envHash) return false
-
-  const userMatch = username === envUser
-  const passHash = await sha256(password)
-  const passMatch = passHash === envHash
-
-  return userMatch && passMatch
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    })
+    return res.ok
+  } catch {
+    return false
+  }
 }
 
 export function isAuthenticated(): boolean {
