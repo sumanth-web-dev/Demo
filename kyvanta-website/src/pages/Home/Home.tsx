@@ -1,3 +1,4 @@
+import { SEO, OrganizationSchema, WebSiteSchema } from '../../components/SEO/SEO'
 import { Hero } from '../../sections/Hero/Hero'
 import { TrustStrip } from '../../sections/TrustStrip/TrustStrip'
 import { ClientProblems } from '../../sections/ClientProblems/ClientProblems'
@@ -11,6 +12,13 @@ import { FinalCTA } from '../../sections/FinalCTA/FinalCTA'
 export function Home() {
   return (
     <>
+      <SEO
+        title="AI, Software & Intelligent Technology"
+        description="Kyvanta Innovation builds intelligent software, AI systems, automation solutions, and scalable digital technology for modern businesses."
+        path="/"
+      />
+      <OrganizationSchema />
+      <WebSiteSchema />
       <Hero />
       <TrustStrip />
       <ClientProblems />

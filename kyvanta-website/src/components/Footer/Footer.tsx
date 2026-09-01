@@ -13,9 +13,9 @@ export function Footer() {
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-1">
               <img
-                src="/logo.svg"
+                src="/KyvantaLogo.png"
                 alt="Kyvanta Innovation"
-                className="h-9 w-auto mb-4 brightness-0 invert"
+                className="h-9 w-auto mb-4"
               />
               <p className="text-sm leading-relaxed max-w-xs">
                 {siteData.company.description}
@@ -81,6 +81,14 @@ export function Footer() {
                     className="text-sm hover:text-white transition-colors duration-200"
                   >
                     kyvantainnovations@gmail.com
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="tel:+919480700048"
+                    className="text-sm hover:text-white transition-colors duration-200"
+                  >
+                    +91 9480700048
                   </a>
                 </li>
               </ul>

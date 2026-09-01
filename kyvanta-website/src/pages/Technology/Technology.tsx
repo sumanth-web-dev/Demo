@@ -1,13 +1,22 @@
 import { motion } from 'framer-motion'
 import { Container } from '../../components/Container/Container'
-import { SectionHeading } from '../../components/SectionHeading/SectionHeading'
 import { CTA } from '../../components/CTA/CTA'
+import { SEO, WebPageSchema } from '../../components/SEO/SEO'
 import { technologyCategories } from '../../data/technology'
 
 export function TechnologyPage() {
   return (
     <>
-      {/* Hero */}
+      <SEO
+        title="Technology Stack & Engineering Tools"
+        description="Kyvanta's technology stack — AI frameworks, cloud platforms, programming languages, databases, and DevOps tools powering intelligent solutions."
+        path="/technology"
+      />
+      <WebPageSchema
+        title="Technology Stack & Engineering Tools"
+        description="Kyvanta's technology stack — AI frameworks, cloud platforms, programming languages, databases, and DevOps tools powering intelligent solutions."
+        path="/technology"
+      />
       <section className="pt-32 sm:pt-40 pb-20 sm:pb-28 bg-white">
         <Container>
           <motion.div

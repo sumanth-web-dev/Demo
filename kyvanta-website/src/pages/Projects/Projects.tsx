@@ -2,12 +2,22 @@ import { motion } from 'framer-motion'
 import { Container } from '../../components/Container/Container'
 import { ProjectCard } from '../../components/ProjectCard/ProjectCard'
 import { CTA } from '../../components/CTA/CTA'
+import { SEO, WebPageSchema } from '../../components/SEO/SEO'
 import { projects } from '../../data/projects'
 
 export function ProjectsPage() {
   return (
     <>
-      {/* Hero */}
+      <SEO
+        title="Projects & Case Studies"
+        description="View Kyvanta's project portfolio — AI systems, automation platforms, and custom software solutions built for real business challenges."
+        path="/projects"
+      />
+      <WebPageSchema
+        title="Projects & Case Studies"
+        description="View Kyvanta's project portfolio — AI systems, automation platforms, and custom software solutions built for real business challenges."
+        path="/projects"
+      />
       <section className="pt-32 sm:pt-40 pb-20 sm:pb-28 bg-white">
         <Container>
           <motion.div

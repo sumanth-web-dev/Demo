@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Container } from '../../components/Container/Container'
-import { SectionHeading } from '../../components/SectionHeading/SectionHeading'
 import { CTA } from '../../components/CTA/CTA'
+import { SEO, WebPageSchema } from '../../components/SEO/SEO'
 import { solutions } from '../../data/solutions'
 import { siteData } from '../../data/site'
 
@@ -23,7 +23,16 @@ export function SolutionsPage() {
 
   return (
     <>
-      {/* Hero */}
+      <SEO
+        title="AI, Automation & Software Solutions"
+        description="Explore Kyvanta's solutions — AI & intelligent systems, intelligent automation, custom software, digital platforms, voice AI, and edge IoT technology."
+        path="/solutions"
+      />
+      <WebPageSchema
+        title="AI, Automation & Software Solutions"
+        description="Explore Kyvanta's solutions — AI & intelligent systems, intelligent automation, custom software, digital platforms, voice AI, and edge IoT technology."
+        path="/solutions"
+      />
       <section className="pt-32 sm:pt-40 pb-20 sm:pb-28 bg-white">
         <Container>
           <motion.div

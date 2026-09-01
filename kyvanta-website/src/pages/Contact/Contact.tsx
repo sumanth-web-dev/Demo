@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Mail, ChevronDown, Check } from 'lucide-react'
+import { ArrowRight, Mail, Phone, ChevronDown, Check, AlertCircle, Loader2 } from 'lucide-react'
 import { Container } from '../../components/Container/Container'
+import { SEO, WebPageSchema } from '../../components/SEO/SEO'
 
 const needOptions = [
   { value: '', label: 'Select an area' },
@@ -20,7 +21,7 @@ interface CustomDropdownProps {
   required?: boolean
 }
 
-function CustomDropdown({ value, onChange, required }: CustomDropdownProps) {
+function CustomDropdown({ value, onChange, required: _required }: CustomDropdownProps) {
   const [open, setOpen] = useState(false)
   const [focused, setFocused] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -134,6 +135,10 @@ export function Contact() {
     description: '',
   })
   const [focused, setFocused] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const formRef = useRef<HTMLDivElement>(null)
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -145,8 +150,31 @@ export function Contact() {
     setFormState({ ...formState, need: val })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSubmitting(true)
+    setError(null)
+
+    try {
+      const res = await fetch('/api/submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formState),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to submit form')
+      }
+
+      setSubmitted(true)
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const inputBase =
@@ -156,7 +184,16 @@ export function Contact() {
 
   return (
     <>
-      {/* Hero */}
+      <SEO
+        title="Contact Us"
+        description="Get in touch with Kyvanta Innovation. Tell us about your project and we'll help you find the right technology solution."
+        path="/contact"
+      />
+      <WebPageSchema
+        title="Contact Us"
+        description="Get in touch with Kyvanta Innovation. Tell us about your project and we'll help you find the right technology solution."
+        path="/contact"
+      />
       <section className="pt-32 sm:pt-40 pb-16 sm:pb-20 bg-white">
         <Container>
           <motion.div
@@ -185,6 +222,7 @@ export function Contact() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
             {/* Form */}
             <motion.div
+              ref={formRef}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -192,6 +230,55 @@ export function Contact() {
               className="lg:col-span-7"
             >
               <form onSubmit={handleSubmit} className="space-y-5">
+                <AnimatePresence mode="wait">
+                  {submitted ? (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      className="p-8 rounded-2xl bg-white border border-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] text-center"
+                    >
+                      <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                        <Check className="w-7 h-7 text-green-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                        Message sent successfully!
+                      </h3>
+                      <p className="text-sm text-slate-500 mb-6 leading-relaxed">
+                        Thank you for reaching out. We've received your details
+                        and will get back to you within one business day.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSubmitted(false)
+                          setFormState({ name: '', email: '', company: '', need: '', description: '' })
+                        }}
+                        className="text-sm font-medium text-slate-900 underline underline-offset-4 decoration-slate-300 hover:decoration-slate-900 transition-colors duration-200"
+                      >
+                        Send another message
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="form"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="space-y-5"
+                    >
+                      {error && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-200"
+                        >
+                          <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                          <p className="text-sm text-red-600">{error}</p>
+                        </motion.div>
+                      )}
                 {/* Name + Email row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -297,12 +384,25 @@ export function Contact() {
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-sm font-medium text-white bg-slate-900 rounded-xl hover:bg-slate-800 active:bg-slate-950 transition-colors duration-200 cursor-pointer"
+                    disabled={isSubmitting}
+                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-sm font-medium text-white bg-slate-900 rounded-xl hover:bg-slate-800 active:bg-slate-950 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Start the Conversation
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        Start the Conversation
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
+                      </>
+                    )}
                   </button>
                 </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </form>
             </motion.div>
 
@@ -315,6 +415,28 @@ export function Contact() {
               className="lg:col-span-5"
             >
               <div className="space-y-6">
+                {/* Phone card */}
+                <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center">
+                      <Phone className="w-4 h-4 text-slate-500" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Prefer a call?
+                    </h3>
+                  </div>
+                  <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+                    Reach us directly and we'll get back to you within one
+                    business day.
+                  </p>
+                  <a
+                    href="tel:+919480700048"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-900 underline underline-offset-4 decoration-slate-300 hover:decoration-slate-900 transition-colors duration-200"
+                  >
+                    +91 9480700048
+                  </a>
+                </div>
+
                 {/* Email card */}
                 <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
                   <div className="flex items-center gap-3 mb-3">

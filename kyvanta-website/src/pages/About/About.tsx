@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Container } from '../../components/Container/Container'
 import { CTA } from '../../components/CTA/CTA'
+import { SEO, WebPageSchema } from '../../components/SEO/SEO'
 import { siteData } from '../../data/site'
 
 const beliefs = [
@@ -21,7 +22,16 @@ const philosophy = [
 export function About() {
   return (
     <>
-      {/* Hero */}
+      <SEO
+        title="About Kyvanta Innovation"
+        description="Learn about Kyvanta Innovation — an engineering company that designs intelligent software, AI systems, and automation solutions for modern businesses."
+        path="/about"
+      />
+      <WebPageSchema
+        title="About Kyvanta Innovation"
+        description="Learn about Kyvanta Innovation — an engineering company that designs intelligent software, AI systems, and automation solutions for modern businesses."
+        path="/about"
+      />
       <section className="pt-32 sm:pt-40 pb-20 sm:pb-28 bg-white">
         <Container>
           <motion.div

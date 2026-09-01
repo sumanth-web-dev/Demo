@@ -2,6 +2,8 @@ import type { Plugin } from 'vite'
 import { config } from 'dotenv'
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
+import { readFileSync, writeFileSync } from 'fs'
+import { randomUUID } from 'crypto'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -10,6 +12,42 @@ config({ path: resolve(__dirname, '.env') })
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || ''
 const GROQ_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b'
+
+const SUBMISSIONS_PATH = resolve(__dirname, 'data', 'submissions.json')
+
+interface Submission {
+  id: string
+  name: string
+  email: string
+  company: string
+  need: string
+  needLabel: string
+  description: string
+  timestamp: number
+}
+
+const needLabels: Record<string, string> = {
+  ai: 'AI & Intelligent Systems',
+  automation: 'Intelligent Automation',
+  software: 'Custom Software',
+  platform: 'Digital Platforms',
+  voice: 'Voice & Conversational AI',
+  edge: 'Edge & IoT',
+  other: 'Something else',
+}
+
+function readSubmissions(): Submission[] {
+  try {
+    const raw = readFileSync(SUBMISSIONS_PATH, 'utf-8')
+    return JSON.parse(raw) as Submission[]
+  } catch {
+    return []
+  }
+}
+
+function writeSubmissions(submissions: Submission[]): void {
+  writeFileSync(SUBMISSIONS_PATH, JSON.stringify(submissions, null, 2))
+}
 
 const SYSTEM_PROMPT = `You are Kyvanta AI, the official assistant for Kyvanta Innovation Pvt. Ltd.
 
@@ -116,6 +154,79 @@ export function chatProxyPlugin(): Plugin {
           res.statusCode = 500
           res.end(JSON.stringify({ error: 'Internal server error.' }))
         }
+      })
+
+      // ─── Submissions API ───────────────────────────────
+
+      server.middlewares.use('/api/submissions', async (req, res) => {
+        res.setHeader('Content-Type', 'application/json')
+
+        // GET — list all submissions
+        if (req.method === 'GET') {
+          const submissions = readSubmissions()
+          res.end(JSON.stringify(submissions))
+          return
+        }
+
+        // POST — add new submission OR delete by id
+        if (req.method === 'POST') {
+          let body = ''
+          for await (const chunk of req) {
+            body += chunk
+          }
+
+          try {
+            const parsed = JSON.parse(body)
+
+            // Delete mode: { id: "..." }
+            if (parsed.id && Object.keys(parsed).length === 1) {
+              const submissions = readSubmissions()
+              const filtered = submissions.filter((s) => s.id !== parsed.id)
+
+              if (filtered.length === submissions.length) {
+                res.statusCode = 404
+                res.end(JSON.stringify({ error: 'Submission not found.' }))
+                return
+              }
+
+              writeSubmissions(filtered)
+              res.end(JSON.stringify({ success: true }))
+              return
+            }
+
+            // Create mode: { name, email, ... }
+            const { name, email, company, need, description } = parsed
+
+            if (!name || !email || !need || !description) {
+              res.statusCode = 400
+              res.end(JSON.stringify({ error: 'Missing required fields.' }))
+              return
+            }
+
+            const submissions = readSubmissions()
+            const newSubmission: Submission = {
+              id: randomUUID(),
+              name,
+              email,
+              company: company || '',
+              need,
+              needLabel: needLabels[need] || need,
+              description,
+              timestamp: Date.now(),
+            }
+            submissions.unshift(newSubmission)
+            writeSubmissions(submissions)
+
+            res.end(JSON.stringify(newSubmission))
+          } catch {
+            res.statusCode = 400
+            res.end(JSON.stringify({ error: 'Invalid request body.' }))
+          }
+          return
+        }
+
+        res.statusCode = 405
+        res.end(JSON.stringify({ error: 'Method not allowed.' }))
       })
     },
   }

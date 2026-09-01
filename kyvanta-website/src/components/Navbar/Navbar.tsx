@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ArrowRight } from 'lucide-react'
-import { navigation, siteData } from '../../data/site'
+import { navigation } from '../../data/site'
 import { Container } from '../Container/Container'
 
 export function Navbar() {
@@ -18,7 +18,8 @@ export function Navbar() {
 
   useEffect(() => {
     setMobileOpen(false)
-  }, [location])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname])
 
   useEffect(() => {
     if (mobileOpen) {
@@ -44,7 +45,7 @@ export function Navbar() {
           <nav className="flex items-center justify-between h-16 sm:h-18">
             <Link to="/" className="flex items-center group">
               <img
-                src="/logo.svg"
+                src="/KyvantaLogo.png"
                 alt="Kyvanta Innovation"
                 className="h-9 w-auto"
               />
