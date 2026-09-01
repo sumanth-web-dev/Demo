@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" fill="none">
+  <!-- K icon -->
+  <path d="M10 8 L10 42 L22 42 L22 30 L38 42 L50 42 L28 22 L50 8 L38 8 L22 18 L22 8 Z" fill="#0d1326"/>
+  <path d="M22 30 C22 30 30 24 38 18" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M44 10 L46 6 L48 10 L44 10 Z" fill="#94a3b8"/>
+
+  <!-- KYVANTA text -->
+  <text x="60" y="52" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="800" letter-spacing="0.15em" fill="#0d1326">KYVANTA</text>
+
+  <!-- Lines + INNOVATION PVT. LTD. -->
+  <line x1="60" y1="60" x2="78" y2="60" stroke="#94a3b8" stroke-width="0.8"/>
+  <text x="82" y="63" font-family="Inter, system-ui, sans-serif" font-size="6.5" font-weight="500" letter-spacing="0.25em" fill="#94a3b8">INNOVATION PVT. LTD.</text>
+  <line x1="186" y1="60" x2="204" y2="60" stroke="#94a3b8" stroke-width="0.8"/>
+</svg>

@@ -42,13 +42,12 @@ export function Navbar() {
       >
         <Container>
           <nav className="flex items-center justify-between h-16 sm:h-18">
-            <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
-                <span className="text-white text-sm font-bold">K</span>
-              </div>
-              <span className="text-sm font-semibold text-slate-900 tracking-tight">
-                {siteData.company.shortName}
-              </span>
+            <Link to="/" className="flex items-center group">
+              <img
+                src="/logo.svg"
+                alt="Kyvanta Innovation"
+                className="h-9 w-auto"
+              />
             </Link>
 
             {/* Desktop nav */}

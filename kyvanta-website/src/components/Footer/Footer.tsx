@@ -12,14 +12,11 @@ export function Footer() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-1">
-              <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">K</span>
-                </div>
-                <span className="text-sm font-semibold text-white tracking-tight">
-                  {siteData.company.shortName}
-                </span>
-              </div>
+              <img
+                src="/logo.svg"
+                alt="Kyvanta Innovation"
+                className="h-9 w-auto mb-4 brightness-0 invert"
+              />
               <p className="text-sm leading-relaxed max-w-xs">
                 {siteData.company.description}
               </p>
@@ -80,10 +77,10 @@ export function Footer() {
                 </li>
                 <li>
                   <a
-                    href="mailto:hello@kyvanta.com"
+                    href="mailto:kyvantainnovations@gmail.com"
                     className="text-sm hover:text-white transition-colors duration-200"
                   >
-                    hello@kyvanta.com
+                    kyvantainnovations@gmail.com
                   </a>
                 </li>
               </ul>

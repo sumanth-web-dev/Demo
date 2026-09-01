@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Navbar } from './components/Navbar/Navbar'
 import { Footer } from './components/Footer/Footer'
+import { Chatbot } from './components/Chatbot/Chatbot'
 import { Home } from './pages/Home/Home'
 import { About } from './pages/About/About'
 import { SolutionsPage } from './pages/Solutions/Solutions'
@@ -34,6 +35,7 @@ function App() {
           </Routes>
         </main>
         <Footer />
+        <Chatbot />
       </div>
     </BrowserRouter>
   )

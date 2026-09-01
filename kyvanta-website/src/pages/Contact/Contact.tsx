@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { ArrowRight, Mail, ChevronDown } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowRight, Mail, ChevronDown, Check } from 'lucide-react'
 import { Container } from '../../components/Container/Container'
 
 const needOptions = [
@@ -14,6 +14,117 @@ const needOptions = [
   { value: 'other', label: 'Something else' },
 ]
 
+interface CustomDropdownProps {
+  value: string
+  onChange: (val: string) => void
+  required?: boolean
+}
+
+function CustomDropdown({ value, onChange, required }: CustomDropdownProps) {
+  const [open, setOpen] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const selected = needOptions.find((o) => o.value === value)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [])
+
+  return (
+    <div ref={ref} className="relative">
+      {/* Trigger */}
+      <button
+        type="button"
+        onClick={() => {
+          setOpen(!open)
+          setFocused(!open)
+        }}
+        onFocus={() => setFocused(true)}
+        onBlur={() => !open && setFocused(false)}
+        className={`
+          w-full flex items-center justify-between gap-3
+          px-4 py-3.5 text-sm text-left
+          bg-white border rounded-xl
+          outline-none transition-all duration-200 cursor-pointer
+          ${focused || open ? 'border-slate-900 ring-4 ring-slate-900/5' : 'border-slate-200 hover:border-slate-300'}
+          ${!value ? 'text-slate-400' : 'text-slate-900'}
+        `}
+      >
+        <span className="truncate">{selected?.label || 'Select an area'}</span>
+        <ChevronDown
+          className={`w-4 h-4 shrink-0 transition-all duration-200 ${
+            open ? 'text-slate-900 rotate-180' : 'text-slate-400'
+          }`}
+        />
+      </button>
+
+      {/* Dropdown list */}
+      <AnimatePresence>
+        {open && (
+          <motion.ul
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="
+              absolute z-50 mt-2 w-full
+              bg-white border border-slate-200 rounded-xl
+              shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1),0_2px_6px_-2px_rgba(0,0,0,0.05)]
+              overflow-hidden
+              max-h-60 overflow-y-auto
+            "
+          >
+            {needOptions.filter(o => o.value !== '').map((opt) => {
+              const isSelected = value === opt.value
+              return (
+                <li key={opt.value}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onChange(opt.value)
+                      setOpen(false)
+                      setFocused(false)
+                    }}
+                    className={`
+                      w-full flex items-center justify-between gap-3
+                      px-4 py-3 text-sm
+                      transition-colors duration-100 cursor-pointer
+                      ${isSelected
+                        ? 'bg-slate-50 text-slate-900 font-medium'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      }
+                    `}
+                  >
+                    <span>{opt.label}</span>
+                    {isSelected && (
+                      <Check className="w-4 h-4 text-slate-900 shrink-0" />
+                    )}
+                  </button>
+                </li>
+              )
+            })}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 export function Contact() {
   const [formState, setFormState] = useState({
     name: '',
@@ -25,9 +136,13 @@ export function Contact() {
   const [focused, setFocused] = useState<string | null>(null)
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setFormState({ ...formState, [e.target.name]: e.target.value })
+  }
+
+  const handleSelectChange = (val: string) => {
+    setFormState({ ...formState, need: val })
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -35,7 +150,7 @@ export function Contact() {
   }
 
   const inputBase =
-    'w-full px-4 py-3.5 text-sm text-slate-900 bg-white border rounded-xl outline-none transition-all duration-200 placeholder:text-slate-400'
+    'w-full px-4 py-3.5 text-sm bg-white border rounded-xl outline-none transition-all duration-200 placeholder:text-slate-400'
   const inputNormal = 'border-slate-200 hover:border-slate-300'
   const inputFocused = 'border-slate-900 ring-4 ring-slate-900/5'
 
@@ -142,41 +257,16 @@ export function Contact() {
                   />
                 </div>
 
-                {/* Select dropdown */}
+                {/* Custom dropdown */}
                 <div>
-                  <label
-                    htmlFor="need"
-                    className="block text-[13px] font-medium text-slate-600 mb-2"
-                  >
+                  <label className="block text-[13px] font-medium text-slate-600 mb-2">
                     What do you need help with? <span className="text-red-400">*</span>
                   </label>
-                  <div className="relative">
-                    <select
-                      id="need"
-                      name="need"
-                      value={formState.need}
-                      onChange={handleChange}
-                      onFocus={() => setFocused('need')}
-                      onBlur={() => setFocused(null)}
-                      required
-                      className={`${inputBase} appearance-none pr-10 cursor-pointer ${
-                        focused === 'need' ? inputFocused : inputNormal
-                      } ${!formState.need ? 'text-slate-400' : ''}`}
-                    >
-                      {needOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none">
-                      <ChevronDown
-                        className={`w-4 h-4 transition-colors duration-200 ${
-                          focused === 'need' ? 'text-slate-900' : 'text-slate-400'
-                        }`}
-                      />
-                    </div>
-                  </div>
+                  <CustomDropdown
+                    value={formState.need}
+                    onChange={handleSelectChange}
+                    required
+                  />
                 </div>
 
                 {/* Description */}
@@ -240,10 +330,10 @@ export function Contact() {
                     business day.
                   </p>
                   <a
-                    href="mailto:hello@kyvanta.com"
+                    href="mailto:kyvantainnovations@gmail.com"
                     className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-900 underline underline-offset-4 decoration-slate-300 hover:decoration-slate-900 transition-colors duration-200"
                   >
-                    hello@kyvanta.com
+                    kyvantainnovations@gmail.com
                   </a>
                 </div>
 
