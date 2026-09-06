@@ -77,10 +77,10 @@ export function Footer() {
                 </li>
                 <li>
                   <a
-                    href="mailto:kyvantainnovations@gmail.com"
+                    href="mailto:kyvanta.innovations@gmail.com"
                     className="text-sm hover:text-white transition-colors duration-200"
                   >
-                    kyvantainnovations@gmail.com
+                    kyvanta.innovations@gmail.com
                   </a>
                 </li>
                 <li>

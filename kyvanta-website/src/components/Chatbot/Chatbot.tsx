@@ -209,7 +209,7 @@ export function Chatbot() {
       if (!res.ok) {
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: "I'm having trouble connecting right now. Please try again or email us at **kyvantainnovations@gmail.com**." },
+          { role: 'assistant', content: "I'm having trouble connecting right now. Please try again or email us at **kyvanta.innovations@gmail.com**." },
         ])
         return
       }
@@ -218,7 +218,7 @@ export function Chatbot() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: "I'm having trouble connecting right now. Please try again or email us at **kyvantainnovations@gmail.com**." },
+        { role: 'assistant', content: "I'm having trouble connecting right now. Please try again or email us at **kyvanta.innovations@gmail.com**." },
       ])
     } finally {
       setIsLoading(false)

@@ -39,7 +39,7 @@ WHY KYVANTA:
 - Keep It Practical: Technology should solve a real problem, not exist simply because it is new.
 
 CONTACT:
-- Email: kyvantainnovations@gmail.com
+- Email: kyvanta.innovations@gmail.com
 - Website: kyvanta.com
 
 RULES:

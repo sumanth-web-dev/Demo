@@ -452,10 +452,10 @@ export function Contact() {
                     business day.
                   </p>
                   <a
-                    href="mailto:kyvantainnovations@gmail.com"
+                    href="mailto:kyvanta.innovations@gmail.com"
                     className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-900 underline underline-offset-4 decoration-slate-300 hover:decoration-slate-900 transition-colors duration-200"
                   >
-                    kyvantainnovations@gmail.com
+                    kyvanta.innovations@gmail.com
                   </a>
                 </div>
 

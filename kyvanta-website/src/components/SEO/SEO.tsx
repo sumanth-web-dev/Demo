@@ -62,7 +62,7 @@ export function OrganizationSchema() {
       '@type': 'ContactPoint',
       telephone: '+91-9480700048',
       contactType: 'customer service',
-      email: 'kyvantainnovations@gmail.com',
+      email: 'kyvanta.innovations@gmail.com',
     },
     sameAs: [],
   }
