@@ -9,12 +9,12 @@ export function ProjectsPage() {
   return (
     <>
       <SEO
-        title="Projects & Case Studies"
+        title="Work & Case Studies"
         description="View Kyvanta's project portfolio — AI systems, automation platforms, and custom software solutions built for real business challenges."
         path="/projects"
       />
       <WebPageSchema
-        title="Projects & Case Studies"
+        title="Work & Case Studies"
         description="View Kyvanta's project portfolio — AI systems, automation platforms, and custom software solutions built for real business challenges."
         path="/projects"
       />
@@ -27,13 +27,13 @@ export function ProjectsPage() {
             className="max-w-3xl"
           >
             <span className="inline-block text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-400 mb-4">
-              Projects
+              Work
             </span>
             <h1 className="text-4xl sm:text-5xl font-semibold text-slate-900 leading-[1.1] tracking-tight">
-              Selected capabilities.
+              Selected work.
             </h1>
             <p className="mt-6 text-lg text-slate-500 leading-relaxed max-w-2xl">
-              Examples of what we can create. Each project demonstrates our approach to solving complex business challenges with technology.
+              Examples of what we build. Each project demonstrates our approach to solving real business challenges with AI and software engineering.
             </p>
           </motion.div>
         </Container>
@@ -54,7 +54,7 @@ export function ProjectsPage() {
         label="Build Something Similar"
         title="Have a project in mind?"
         description="We'd love to hear about what you're trying to build. Tell us about your challenge and we'll explore how we can help."
-        primaryAction={{ label: 'Start the Conversation', to: '/contact' }}
+        primaryAction={{ label: 'Book an AI Strategy Call', to: '/contact' }}
         secondaryAction={{ label: 'View All Solutions', to: '/solutions' }}
         dark
       />

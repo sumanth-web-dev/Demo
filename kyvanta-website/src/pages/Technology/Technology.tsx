@@ -8,13 +8,13 @@ export function TechnologyPage() {
   return (
     <>
       <SEO
-        title="Technology Stack & Engineering Tools"
-        description="Kyvanta's technology stack — AI frameworks, cloud platforms, programming languages, databases, and DevOps tools powering intelligent solutions."
+        title="Technology & Engineering"
+        description="Kyvanta's technology capabilities — AI frameworks, engineering tools, automation platforms, and cloud infrastructure powering intelligent business solutions."
         path="/technology"
       />
       <WebPageSchema
-        title="Technology Stack & Engineering Tools"
-        description="Kyvanta's technology stack — AI frameworks, cloud platforms, programming languages, databases, and DevOps tools powering intelligent solutions."
+        title="Technology & Engineering"
+        description="Kyvanta's technology capabilities — AI frameworks, engineering tools, automation platforms, and cloud infrastructure powering intelligent business solutions."
         path="/technology"
       />
       <section className="pt-32 sm:pt-40 pb-20 sm:pb-28 bg-white">
@@ -32,7 +32,7 @@ export function TechnologyPage() {
               The technology behind the solution.
             </h1>
             <p className="mt-6 text-lg text-slate-500 leading-relaxed max-w-2xl">
-              We choose technology based on what serves the problem best. Every tool has a purpose, every architecture decision is intentional.
+              We choose technology based on what serves the problem best. Every tool has a purpose, every architecture decision is intentional. Here's what we work with.
             </p>
           </motion.div>
         </Container>
@@ -94,7 +94,7 @@ export function TechnologyPage() {
         label="Explore What We Can Build"
         title="Have a specific technology need?"
         description="We'll help you identify the right technology stack and architecture for your project."
-        primaryAction={{ label: 'Discuss Your Project', to: '/contact' }}
+        primaryAction={{ label: 'Book an AI Strategy Call', to: '/contact' }}
         secondaryAction={{ label: 'View Solutions', to: '/solutions' }}
       />
     </>

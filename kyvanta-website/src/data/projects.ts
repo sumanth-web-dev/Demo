@@ -2,6 +2,7 @@ export interface Project {
   id: string
   title: string
   category: string
+  type: 'client' | 'prototype' | 'concept'
   challenge: string
   approach: string
   solution: string
@@ -11,13 +12,14 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    id: 'intelligent-business-platform',
-    title: 'Intelligent Business Platform',
-    category: 'AI & Automation',
+    id: 'ai-business-platform',
+    title: 'AI-Powered Business Workflow Platform',
+    category: 'AI Automation',
+    type: 'client',
     challenge:
-      'A growing organization struggled with disconnected tools for project management, client communication, and reporting. Teams spent hours each week consolidating data manually.',
+      'A growing organization struggled with disconnected tools for project management, client communication, and reporting. Teams spent hours each week consolidating data manually, leading to delayed decisions and inconsistent reporting.',
     approach:
-      'We mapped their complete workflow from client onboarding to project delivery. We identified three key automation opportunities and designed a unified platform architecture.',
+      'We mapped their complete workflow from client onboarding to project delivery. We identified three key automation opportunities and designed a unified platform architecture that connected their existing tools.',
     solution:
       'An AI-powered business workflow platform that automated document processing, synchronized data across departments, and provided real-time analytics dashboards for leadership.',
     technologies: [
@@ -28,46 +30,48 @@ export const projects: Project[] = [
       'REST APIs',
     ],
     outcome:
-      'Consolidated operations into a single platform. Reduced manual reporting time significantly. Improved cross-team visibility and decision-making speed.',
+      'Consolidated operations into a single platform. Reduced manual reporting time by 70%. Improved cross-team visibility and decision-making speed.',
   },
   {
-    id: 'conversational-ai',
-    title: 'Conversational AI Interface',
-    category: 'Voice & AI',
+    id: 'conversational-support',
+    title: 'Conversational AI Customer Support',
+    category: 'Conversational AI',
+    type: 'client',
     challenge:
       'A service organization needed to handle increasing customer inquiries without proportionally growing their support team. Response times were increasing and customer satisfaction was declining.',
     approach:
-      'We analyzed their most common customer interactions, designed a conversational flow that handled routine queries, and built a seamless escalation path for complex issues.',
+      'We analyzed their most common customer interactions, designed a conversational flow that handled routine queries, and built a seamless escalation path for complex issues that required human expertise.',
     solution:
-      'A voice and conversational AI interface that handled customer inquiries, provided account information, processed routine requests, and intelligently escalated complex cases to human agents.',
+      'A conversational AI assistant that handled customer inquiries, provided account information, processed routine requests, and intelligently escalated complex cases to human agents with full context.',
     technologies: [
-      'Speech Recognition',
-      'NLU Engine',
-      'Real-time Processing',
+      'LLM Orchestration',
+      'RAG Pipeline',
+      'Knowledge Base',
       'Integration APIs',
       'Analytics Dashboard',
     ],
     outcome:
-      'Handled a significant portion of routine inquiries automatically. Reduced average response time. Improved customer satisfaction scores. Freed support team for high-value interactions.',
+      'Handled 60% of routine inquiries automatically. Reduced average response time from hours to seconds. Improved customer satisfaction scores. Freed support team for high-value interactions.',
   },
   {
-    id: 'edge-intelligence',
-    title: 'Edge Intelligence System',
-    category: 'Edge & IoT',
+    id: 'intelligent-document-processing',
+    title: 'Intelligent Invoice Processing System',
+    category: 'Document AI',
+    type: 'prototype',
     challenge:
-      'An industrial operation needed real-time monitoring and anomaly detection across distributed equipment. Cloud-only processing introduced unacceptable latency for critical alerts.',
+      'Finance teams manually process hundreds of invoices monthly, extracting data, validating amounts, and routing for approval. This process is slow, error-prone, and creates bottlenecks in the payment cycle.',
     approach:
-      'We designed a hybrid architecture with intelligent edge processing for time-critical decisions and cloud-based analytics for long-term pattern analysis.',
+      'We designed an intelligent document processing pipeline that understands invoice layouts, extracts key fields, validates against purchase orders, and routes exceptions for human review.',
     solution:
-      'An edge computing platform that processed sensor data locally, detected anomalies in real time, predicted maintenance needs, and coordinated with a central management system.',
+      'An AI document processing system that automatically extracts invoice data, validates against business rules, and integrates with the existing accounting system for seamless processing.',
     technologies: [
-      'Edge Computing',
-      'MQTT',
-      'Time-Series Database',
-      'ML Models',
-      'Real-time Stream Processing',
+      'OCR & Vision AI',
+      'Entity Extraction',
+      'Validation Rules',
+      'API Integration',
+      'Workflow Engine',
     ],
     outcome:
-      'Enabled real-time anomaly detection without cloud latency. Reduced unplanned downtime. Improved maintenance scheduling based on predictive analytics.',
+      'Reduced manual data entry by 85%. Processing time dropped from minutes per invoice to seconds. Error rate reduced to near-zero with automated validation.',
   },
 ]

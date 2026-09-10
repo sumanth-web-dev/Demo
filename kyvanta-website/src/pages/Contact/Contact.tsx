@@ -3,30 +3,53 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Mail, Phone, ChevronDown, Check, AlertCircle, Loader2 } from 'lucide-react'
 import { Container } from '../../components/Container/Container'
 import { SEO, WebPageSchema } from '../../components/SEO/SEO'
+import { trackFormStart, trackFormSubmit } from '../../utils/analytics'
 
-const needOptions = [
+const problemAreaOptions = [
   { value: '', label: 'Select an area' },
-  { value: 'ai', label: 'AI & Intelligent Systems' },
-  { value: 'automation', label: 'Intelligent Automation' },
-  { value: 'software', label: 'Custom Software' },
-  { value: 'platform', label: 'Digital Platforms' },
-  { value: 'voice', label: 'Voice & Conversational AI' },
-  { value: 'edge', label: 'Edge & IoT' },
+  { value: 'automation', label: 'Workflow automation' },
+  { value: 'ai-agents', label: 'AI agents' },
+  { value: 'custom-ai', label: 'Custom AI applications' },
+  { value: 'conversational', label: 'Conversational AI / chatbots' },
+  { value: 'integration', label: 'AI integration with existing systems' },
+  { value: 'documents', label: 'Document processing' },
+  { value: 'knowledge', label: 'Knowledge management' },
+  { value: 'software', label: 'Custom software development' },
   { value: 'other', label: 'Something else' },
+]
+
+const timelineOptions = [
+  { value: '', label: 'Select timeline' },
+  { value: 'exploring', label: 'Just exploring' },
+  { value: '1-month', label: 'Within 1 month' },
+  { value: '3-months', label: 'Within 3 months' },
+  { value: '6-months', label: 'Within 6 months' },
+  { value: 'urgent', label: 'ASAP' },
+]
+
+const budgetOptions = [
+  { value: '', label: 'Select range' },
+  { value: 'under-5k', label: 'Under $5,000' },
+  { value: '5k-15k', label: '$5,000 - $15,000' },
+  { value: '15k-50k', label: '$15,000 - $50,000' },
+  { value: '50k-plus', label: '$50,000+' },
+  { value: 'unsure', label: 'Not sure yet' },
 ]
 
 interface CustomDropdownProps {
   value: string
   onChange: (val: string) => void
+  options: { value: string; label: string }[]
+  placeholder?: string
   required?: boolean
 }
 
-function CustomDropdown({ value, onChange, required: _required }: CustomDropdownProps) {
+function CustomDropdown({ value, onChange, options, placeholder = 'Select', required: _required }: CustomDropdownProps) {
   const [open, setOpen] = useState(false)
   const [focused, setFocused] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  const selected = needOptions.find((o) => o.value === value)
+  const selected = options.find((o) => o.value === value)
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -48,7 +71,6 @@ function CustomDropdown({ value, onChange, required: _required }: CustomDropdown
 
   return (
     <div ref={ref} className="relative">
-      {/* Trigger */}
       <button
         type="button"
         onClick={() => {
@@ -66,7 +88,7 @@ function CustomDropdown({ value, onChange, required: _required }: CustomDropdown
           ${!value ? 'text-slate-400' : 'text-slate-900'}
         `}
       >
-        <span className="truncate">{selected?.label || 'Select an area'}</span>
+        <span className="truncate">{selected?.label || placeholder}</span>
         <ChevronDown
           className={`w-4 h-4 shrink-0 transition-all duration-200 ${
             open ? 'text-slate-900 rotate-180' : 'text-slate-400'
@@ -74,7 +96,6 @@ function CustomDropdown({ value, onChange, required: _required }: CustomDropdown
         />
       </button>
 
-      {/* Dropdown list */}
       <AnimatePresence>
         {open && (
           <motion.ul
@@ -90,7 +111,7 @@ function CustomDropdown({ value, onChange, required: _required }: CustomDropdown
               max-h-60 overflow-y-auto
             "
           >
-            {needOptions.filter(o => o.value !== '').map((opt) => {
+            {options.filter(o => o.value !== '').map((opt) => {
               const isSelected = value === opt.value
               return (
                 <li key={opt.value}>
@@ -131,7 +152,12 @@ export function Contact() {
     name: '',
     email: '',
     company: '',
-    need: '',
+    problemArea: '',
+    desiredSolution: '',
+    currentProcess: '',
+    existingSoftware: '',
+    timeline: '',
+    budget: '',
     description: '',
   })
   const [focused, setFocused] = useState<string | null>(null)
@@ -146,20 +172,17 @@ export function Contact() {
     setFormState({ ...formState, [e.target.name]: e.target.value })
   }
 
-  const handleSelectChange = (val: string) => {
-    setFormState({ ...formState, need: val })
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     setError(null)
+    trackFormStart('contact')
 
     try {
       const res = await fetch('/api/submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formState),
+        body: JSON.stringify({ ...formState, formType: 'contact' }),
       })
 
       if (!res.ok) {
@@ -167,6 +190,7 @@ export function Contact() {
         throw new Error(data.error || 'Failed to submit form')
       }
 
+      trackFormSubmit('contact')
       setSubmitted(true)
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     } catch (err) {
@@ -186,12 +210,12 @@ export function Contact() {
     <>
       <SEO
         title="Contact Us"
-        description="Get in touch with Kyvanta Innovation. Tell us about your project and we'll help you find the right technology solution."
+        description="Book an AI strategy call with Kyvanta Innovation. Tell us about your project and we'll help you find the right approach."
         path="/contact"
       />
       <WebPageSchema
         title="Contact Us"
-        description="Get in touch with Kyvanta Innovation. Tell us about your project and we'll help you find the right technology solution."
+        description="Book an AI strategy call with Kyvanta Innovation. Tell us about your project and we'll help you find the right approach."
         path="/contact"
       />
       <section className="pt-32 sm:pt-40 pb-16 sm:pb-20 bg-white">
@@ -206,11 +230,10 @@ export function Contact() {
               Contact
             </span>
             <h1 className="text-4xl sm:text-5xl font-semibold text-slate-900 leading-[1.1] tracking-tight">
-              Let's solve something meaningful.
+              Book an AI Strategy Call.
             </h1>
             <p className="mt-6 text-lg text-slate-500 leading-relaxed max-w-2xl">
-              Tell us what you're trying to build, improve, automate, or solve.
-              We'll start by understanding the problem.
+              Tell us what you're trying to solve. We'll discuss your challenges, identify AI opportunities, and outline a practical approach — no obligations.
             </p>
           </motion.div>
         </Container>
@@ -244,21 +267,20 @@ export function Contact() {
                         <Check className="w-7 h-7 text-green-600" />
                       </div>
                       <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                        Message sent successfully!
+                        Request received!
                       </h3>
                       <p className="text-sm text-slate-500 mb-6 leading-relaxed">
-                        Thank you for reaching out. We've received your details
-                        and will get back to you within one business day.
+                        Thank you for reaching out. We'll review your details and get back to you within one business day to schedule your strategy call.
                       </p>
                       <button
                         type="button"
                         onClick={() => {
                           setSubmitted(false)
-                          setFormState({ name: '', email: '', company: '', need: '', description: '' })
+                          setFormState({ name: '', email: '', company: '', problemArea: '', desiredSolution: '', currentProcess: '', existingSoftware: '', timeline: '', budget: '', description: '' })
                         }}
                         className="text-sm font-medium text-slate-900 underline underline-offset-4 decoration-slate-300 hover:decoration-slate-900 transition-colors duration-200"
                       >
-                        Send another message
+                        Submit another request
                       </button>
                     </motion.div>
                   ) : (
@@ -279,127 +301,219 @@ export function Contact() {
                           <p className="text-sm text-red-600">{error}</p>
                         </motion.div>
                       )}
-                {/* Name + Email row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-[13px] font-medium text-slate-600 mb-2"
-                    >
-                      Name <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formState.name}
-                      onChange={handleChange}
-                      onFocus={() => setFocused('name')}
-                      onBlur={() => setFocused(null)}
-                      required
-                      className={`${inputBase} ${focused === 'name' ? inputFocused : inputNormal}`}
-                      placeholder="Your full name"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-[13px] font-medium text-slate-600 mb-2"
-                    >
-                      Work Email <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formState.email}
-                      onChange={handleChange}
-                      onFocus={() => setFocused('email')}
-                      onBlur={() => setFocused(null)}
-                      required
-                      className={`${inputBase} ${focused === 'email' ? inputFocused : inputNormal}`}
-                      placeholder="you@company.com"
-                    />
-                  </div>
-                </div>
 
-                {/* Company */}
-                <div>
-                  <label
-                    htmlFor="company"
-                    className="block text-[13px] font-medium text-slate-600 mb-2"
-                  >
-                    Company
-                  </label>
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    value={formState.company}
-                    onChange={handleChange}
-                    onFocus={() => setFocused('company')}
-                    onBlur={() => setFocused(null)}
-                    className={`${inputBase} ${focused === 'company' ? inputFocused : inputNormal}`}
-                    placeholder="Company name"
-                  />
-                </div>
+                      {/* Name + Email row */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label
+                            htmlFor="name"
+                            className="block text-[13px] font-medium text-slate-600 mb-2"
+                          >
+                            Name <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={formState.name}
+                            onChange={handleChange}
+                            onFocus={() => setFocused('name')}
+                            onBlur={() => setFocused(null)}
+                            required
+                            className={`${inputBase} ${focused === 'name' ? inputFocused : inputNormal}`}
+                            placeholder="Your full name"
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="email"
+                            className="block text-[13px] font-medium text-slate-600 mb-2"
+                          >
+                            Work Email <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formState.email}
+                            onChange={handleChange}
+                            onFocus={() => setFocused('email')}
+                            onBlur={() => setFocused(null)}
+                            required
+                            className={`${inputBase} ${focused === 'email' ? inputFocused : inputNormal}`}
+                            placeholder="you@company.com"
+                          />
+                        </div>
+                      </div>
 
-                {/* Custom dropdown */}
-                <div>
-                  <label className="block text-[13px] font-medium text-slate-600 mb-2">
-                    What do you need help with? <span className="text-red-400">*</span>
-                  </label>
-                  <CustomDropdown
-                    value={formState.need}
-                    onChange={handleSelectChange}
-                    required
-                  />
-                </div>
+                      {/* Company */}
+                      <div>
+                        <label
+                          htmlFor="company"
+                          className="block text-[13px] font-medium text-slate-600 mb-2"
+                        >
+                          Company
+                        </label>
+                        <input
+                          type="text"
+                          id="company"
+                          name="company"
+                          value={formState.company}
+                          onChange={handleChange}
+                          onFocus={() => setFocused('company')}
+                          onBlur={() => setFocused(null)}
+                          className={`${inputBase} ${focused === 'company' ? inputFocused : inputNormal}`}
+                          placeholder="Company name"
+                        />
+                      </div>
 
-                {/* Description */}
-                <div>
-                  <label
-                    htmlFor="description"
-                    className="block text-[13px] font-medium text-slate-600 mb-2"
-                  >
-                    Project description <span className="text-red-400">*</span>
-                  </label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={formState.description}
-                    onChange={handleChange}
-                    onFocus={() => setFocused('description')}
-                    onBlur={() => setFocused(null)}
-                    required
-                    rows={5}
-                    className={`${inputBase} resize-none ${
-                      focused === 'description' ? inputFocused : inputNormal
-                    }`}
-                    placeholder="Tell us about the problem you're trying to solve, the goals you have, or the outcome you're looking for..."
-                  />
-                </div>
+                      {/* Desired Solution + Current Process row */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label
+                            htmlFor="desiredSolution"
+                            className="block text-[13px] font-medium text-slate-600 mb-2"
+                          >
+                            Desired solution
+                          </label>
+                          <input
+                            type="text"
+                            id="desiredSolution"
+                            name="desiredSolution"
+                            value={formState.desiredSolution}
+                            onChange={handleChange}
+                            onFocus={() => setFocused('desiredSolution')}
+                            onBlur={() => setFocused(null)}
+                            className={`${inputBase} ${focused === 'desiredSolution' ? inputFocused : inputNormal}`}
+                            placeholder="What are you looking to build?"
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="existingSoftware"
+                            className="block text-[13px] font-medium text-slate-600 mb-2"
+                          >
+                            Existing software
+                          </label>
+                          <input
+                            type="text"
+                            id="existingSoftware"
+                            name="existingSoftware"
+                            value={formState.existingSoftware}
+                            onChange={handleChange}
+                            onFocus={() => setFocused('existingSoftware')}
+                            onBlur={() => setFocused(null)}
+                            className={`${inputBase} ${focused === 'existingSoftware' ? inputFocused : inputNormal}`}
+                            placeholder="CRM, ERP, tools you currently use"
+                          />
+                        </div>
+                      </div>
 
-                {/* Submit */}
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-sm font-medium text-white bg-slate-900 rounded-xl hover:bg-slate-800 active:bg-slate-950 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        Start the Conversation
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
-                      </>
-                    )}
-                  </button>
-                </div>
+                      {/* Current Process */}
+                      <div>
+                        <label
+                          htmlFor="currentProcess"
+                          className="block text-[13px] font-medium text-slate-600 mb-2"
+                        >
+                          Current process
+                        </label>
+                        <input
+                          type="text"
+                          id="currentProcess"
+                          name="currentProcess"
+                          value={formState.currentProcess}
+                          onChange={handleChange}
+                          onFocus={() => setFocused('currentProcess')}
+                          onBlur={() => setFocused(null)}
+                          className={`${inputBase} ${focused === 'currentProcess' ? inputFocused : inputNormal}`}
+                          placeholder="How do you handle this today?"
+                        />
+                      </div>
+
+                      {/* Problem Area + Timeline row */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[13px] font-medium text-slate-600 mb-2">
+                            What do you need help with? <span className="text-red-400">*</span>
+                          </label>
+                          <CustomDropdown
+                            value={formState.problemArea}
+                            onChange={(val) => setFormState({ ...formState, problemArea: val })}
+                            options={problemAreaOptions}
+                            placeholder="Select an area"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[13px] font-medium text-slate-600 mb-2">
+                            Timeline
+                          </label>
+                          <CustomDropdown
+                            value={formState.timeline}
+                            onChange={(val) => setFormState({ ...formState, timeline: val })}
+                            options={timelineOptions}
+                            placeholder="Select timeline"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Budget */}
+                      <div>
+                        <label className="block text-[13px] font-medium text-slate-600 mb-2">
+                          Approximate project range
+                        </label>
+                        <CustomDropdown
+                          value={formState.budget}
+                          onChange={(val) => setFormState({ ...formState, budget: val })}
+                          options={budgetOptions}
+                          placeholder="Select range"
+                        />
+                      </div>
+
+                      {/* Description */}
+                      <div>
+                        <label
+                          htmlFor="description"
+                          className="block text-[13px] font-medium text-slate-600 mb-2"
+                        >
+                          Tell us about your challenge <span className="text-red-400">*</span>
+                        </label>
+                        <textarea
+                          id="description"
+                          name="description"
+                          value={formState.description}
+                          onChange={handleChange}
+                          onFocus={() => setFocused('description')}
+                          onBlur={() => setFocused(null)}
+                          required
+                          rows={5}
+                          className={`${inputBase} resize-none ${
+                            focused === 'description' ? inputFocused : inputNormal
+                          }`}
+                          placeholder="What problem are you trying to solve? What does your current process look like? What outcome are you hoping for?"
+                        />
+                      </div>
+
+                      {/* Submit */}
+                      <div className="pt-2">
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-sm font-medium text-white bg-slate-900 rounded-xl hover:bg-slate-800 active:bg-slate-950 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            <>
+                              Request Strategy Call
+                              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -415,6 +529,32 @@ export function Contact() {
               className="lg:col-span-5"
             >
               <div className="space-y-6">
+                {/* What happens next */}
+                <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                  <h3 className="text-sm font-semibold text-slate-900 mb-4">
+                    What happens next?
+                  </h3>
+                  <ol className="space-y-3.5">
+                    {[
+                      'We review your project details.',
+                      'We schedule a 30-minute strategy call.',
+                      'We discuss your challenges and goals.',
+                      'We identify AI opportunities and outline an approach.',
+                      'If it makes sense, we propose a pilot or audit.',
+                    ].map((step, i) => (
+                      <li
+                        key={i}
+                        className="flex gap-3 text-sm text-slate-600 leading-relaxed"
+                      >
+                        <span className="flex-none w-5 h-5 rounded-full bg-slate-100 text-[11px] font-semibold text-slate-500 flex items-center justify-center mt-0.5">
+                          {i + 1}
+                        </span>
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
                 {/* Phone card */}
                 <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
                   <div className="flex items-center gap-3 mb-3">
@@ -457,31 +597,6 @@ export function Contact() {
                   >
                     kyvanta.innovations@gmail.com
                   </a>
-                </div>
-
-                {/* Steps card */}
-                <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-                  <h3 className="text-sm font-semibold text-slate-900 mb-4">
-                    What happens next?
-                  </h3>
-                  <ol className="space-y-3.5">
-                    {[
-                      'We review your project details.',
-                      'We schedule an introductory call.',
-                      'We understand your goals and challenges.',
-                      'We propose an approach and timeline.',
-                    ].map((step, i) => (
-                      <li
-                        key={i}
-                        className="flex gap-3 text-sm text-slate-600 leading-relaxed"
-                      >
-                        <span className="flex-none w-5 h-5 rounded-full bg-slate-100 text-[11px] font-semibold text-slate-500 flex items-center justify-center mt-0.5">
-                          {i + 1}
-                        </span>
-                        {step}
-                      </li>
-                    ))}
-                  </ol>
                 </div>
               </div>
             </motion.div>

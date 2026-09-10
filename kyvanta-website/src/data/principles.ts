@@ -1,26 +1,26 @@
 export const principles = [
   {
     number: '01',
-    title: 'Understand First',
+    title: 'Business-First Discovery',
     description:
-      'We start by understanding the business, users, workflows, and actual problem. Every solution begins with listening.',
+      'We start by understanding your business problem, not the technology. Every solution begins with the question: what outcome matters most?',
   },
   {
     number: '02',
-    title: 'Engineer Precisely',
+    title: 'AI + Software Engineering',
     description:
-      'We focus on reliable architecture, thoughtful design, and quality implementation. Every decision is intentional.',
+      'We combine AI capability with production-grade software engineering. Intelligence without reliability is a demo, not a solution.',
   },
   {
     number: '03',
-    title: 'Build for Scale',
+    title: 'Integration Over Isolation',
     description:
-      'Solutions are designed to evolve with changing business requirements. What works today should work better tomorrow.',
+      'AI that lives in a separate tool gets ignored. We build systems that connect to where your team already works.',
   },
   {
     number: '04',
-    title: 'Keep It Practical',
+    title: 'Measurable Business Outcomes',
     description:
-      'Technology should solve a real problem, not exist simply because it is new. Simplicity is a feature.',
+      'We define success in business terms — hours saved, errors reduced, revenue enabled — not just technical metrics.',
   },
 ]

@@ -4,17 +4,19 @@ import { TrustStrip } from '../../sections/TrustStrip/TrustStrip'
 import { ClientProblems } from '../../sections/ClientProblems/ClientProblems'
 import { Solutions } from '../../sections/Solutions/Solutions'
 import { WhyKyvanta } from '../../sections/WhyKyvanta/WhyKyvanta'
-import { Technology } from '../../sections/Technology/Technology'
+import { WhyNotChatGPT } from '../../sections/WhyNotChatGPT/WhyNotChatGPT'
+import { AIAgentsExplainer } from '../../sections/AIAgentsExplainer/AIAgentsExplainer'
 import { Process } from '../../sections/Process/Process'
 import { Projects } from '../../sections/Projects/Projects'
+import { Trust } from '../../sections/Trust/Trust'
 import { FinalCTA } from '../../sections/FinalCTA/FinalCTA'
 
 export function Home() {
   return (
     <>
       <SEO
-        title="AI, Software & Intelligent Technology"
-        description="Kyvanta Innovation builds intelligent software, AI systems, automation solutions, and scalable digital technology for modern businesses."
+        title="AI, Automation & Custom Software Engineering"
+        description="Kyvanta Innovation helps businesses automate workflows, build AI agents, and create custom software that solves real operational problems."
         path="/"
       />
       <OrganizationSchema />
@@ -24,9 +26,11 @@ export function Home() {
       <ClientProblems />
       <Solutions />
       <WhyKyvanta />
-      <Technology />
+      <WhyNotChatGPT />
+      <AIAgentsExplainer />
       <Process />
       <Projects />
+      <Trust />
       <FinalCTA />
     </>
   )

@@ -9,8 +9,8 @@ export function WhyKyvanta() {
       <Container>
         <SectionHeading
           label="Why Kyvanta"
-          title="Technology is only valuable when it works for people."
-          description="Our approach is built on four principles that guide every project."
+          title="Why Kyvanta instead of a generic agency, freelancer, or off-the-shelf tool?"
+          description="We combine business understanding with production-grade engineering. Here's what sets us apart."
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-slate-100 rounded-xl overflow-hidden">

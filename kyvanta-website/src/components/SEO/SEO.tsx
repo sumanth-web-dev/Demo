@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 
-const SITE_URL = 'https://kyvantainnovation.com'
+const SITE_URL = 'https://kyvantainnovations.com'
 const SITE_NAME = 'Kyvanta Innovation'
 const DEFAULT_IMAGE = '/KyvantaLogo.png'
 
@@ -20,7 +20,7 @@ export function SEO({
   type = 'website',
 }: SEOProps) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | AI, Software & Intelligent Technology`
-  const metaDescription = description || 'Kyvanta Innovation builds intelligent software, AI systems, automation solutions, and scalable digital technology for modern businesses.'
+  const metaDescription = description || 'Kyvanta Innovation helps businesses automate workflows, build AI agents, and create custom software that solves real operational problems.'
   const canonical = `${SITE_URL}${path}`
   const ogImage = `${SITE_URL}${image || DEFAULT_IMAGE}`
 
@@ -57,7 +57,7 @@ export function OrganizationSchema() {
     name: 'Kyvanta Innovation Pvt. Ltd.',
     url: SITE_URL,
     logo: `${SITE_URL}/KyvantaLogo.png`,
-    description: 'We design and build intelligent technology that helps businesses solve complex problems, automate operations, and create better digital experiences.',
+    description: 'Kyvanta Innovation helps businesses automate workflows, build AI agents, and create custom software that solves real operational problems.',
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: '+91-9480700048',

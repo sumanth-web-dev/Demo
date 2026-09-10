@@ -10,12 +10,12 @@ interface Message {
 const WELCOME_MESSAGE: Message = {
   role: 'assistant',
   content:
-    "Hello! I'm Kyvanta AI. I can help you understand our services, solutions, and how we can help your business.\n\nWhat would you like to know?",
+    "Hello! I'm Kyvanta AI. I can help you understand our solutions — AI automation, AI agents, custom software, and how we help businesses solve operational problems.\n\nWhat would you like to know?",
 }
 
 const SUGGESTIONS = [
-  'What services does Kyvanta offer?',
-  'How does Kyvanta approach AI projects?',
+  'What AI solutions does Kyvanta offer?',
+  'How do AI agents work?',
   'What is your development process?',
   'How can I start a project?',
 ]

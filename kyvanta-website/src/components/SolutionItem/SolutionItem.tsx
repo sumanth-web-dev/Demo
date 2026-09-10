@@ -24,7 +24,7 @@ export function SolutionItem({ solution, index }: SolutionItemProps) {
     >
       <Link
         to={`/solutions#${solution.id}`}
-        className="group block p-6 sm:p-8 rounded-xl border border-slate-100 bg-white hover:border-slate-200 hover:shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] transition-all duration-300"
+        className="group block p-6 sm:p-8 rounded-xl border border-slate-100 bg-white hover:border-slate-200 hover:shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] transition-all duration-300 h-full"
       >
         <div className="flex items-start justify-between mb-5">
           <div

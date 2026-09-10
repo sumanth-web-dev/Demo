@@ -1,27 +1,27 @@
 export const processSteps = [
   {
     number: '01',
-    title: 'Understand',
-    description: 'We understand your goals, users, workflows, and challenges.',
+    title: 'AI Opportunity Audit',
+    description: 'We identify where AI and automation can create the most value in your business.',
   },
   {
     number: '02',
-    title: 'Strategize',
-    description: 'We identify the right technology and define the solution.',
+    title: 'Discovery & Architecture',
+    description: 'We map your workflows, define the solution, and plan the technical architecture.',
   },
   {
     number: '03',
-    title: 'Design',
-    description: 'We create the product experience and technical architecture.',
+    title: 'Pilot & Proof of Concept',
+    description: 'We build a focused prototype to validate the approach with real data and workflows.',
   },
   {
     number: '04',
-    title: 'Build',
-    description: 'We engineer, test, integrate, and prepare the solution for production.',
+    title: 'Production Implementation',
+    description: 'We engineer, test, integrate, and deploy the complete solution for your team.',
   },
   {
     number: '05',
-    title: 'Evolve',
-    description: 'We optimize and improve the system as your needs grow.',
+    title: 'Optimization & Scale',
+    description: 'We monitor performance, refine models, and expand capabilities as your needs grow.',
   },
 ]

@@ -6,7 +6,15 @@ interface ProjectCardProps {
   index: number
 }
 
+const typeLabels = {
+  client: { label: 'Client Project', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  prototype: { label: 'Prototype', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+  concept: { label: 'Concept', color: 'bg-slate-50 text-slate-600 border-slate-200' },
+}
+
 export function ProjectCard({ project, index }: ProjectCardProps) {
+  const typeInfo = typeLabels[project.type]
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 24 }}
@@ -22,6 +30,9 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       <div className="flex items-center gap-3 mb-5">
         <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400">
           {project.category}
+        </span>
+        <span className={`px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider rounded-full border ${typeInfo.color}`}>
+          {typeInfo.label}
         </span>
       </div>
 

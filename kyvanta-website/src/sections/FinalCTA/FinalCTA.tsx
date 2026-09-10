@@ -3,11 +3,11 @@ import { CTA } from '../../components/CTA/CTA'
 export function FinalCTA() {
   return (
     <CTA
-      label="Start a Conversation"
-      title="Let's solve something meaningful."
-      description="Tell us what you're trying to build, improve, automate, or solve. We'll start by understanding the problem."
-      primaryAction={{ label: 'Start the Conversation', to: '/contact' }}
-      secondaryAction={{ label: 'Explore Solutions', to: '/solutions' }}
+      label="Ready to Start?"
+      title="Find where AI can create value in your business."
+      description="Book a free AI Strategy Call or request an AI Opportunity Audit. We'll discuss your challenges, identify opportunities, and outline a practical approach — no obligations."
+      primaryAction={{ label: 'Book an AI Strategy Call', to: '/contact' }}
+      secondaryAction={{ label: 'Request Free AI Audit', to: '/audit' }}
       dark
     />
   )

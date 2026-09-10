@@ -5,18 +5,18 @@ import { SEO, WebPageSchema } from '../../components/SEO/SEO'
 import { siteData } from '../../data/site'
 
 const beliefs = [
-  'Technology should be useful.',
-  'Technology should be reliable.',
-  'Technology should be understandable.',
-  'Technology should be scalable.',
-  'Technology should be human-centered.',
+  'Technology should solve a real problem.',
+  'AI needs business context to be useful.',
+  'Integration beats isolation.',
+  'Measurable outcomes matter more than technical metrics.',
+  'Production-grade engineering is non-negotiable.',
 ]
 
 const philosophy = [
-  { title: 'Understand deeply.', description: 'We invest time in understanding the problem before touching any code.' },
-  { title: 'Design simply.', description: 'Complexity is hidden. The experience is intuitive.' },
-  { title: 'Build precisely.', description: 'Every line of code serves a purpose. Every feature solves a problem.' },
-  { title: 'Improve continuously.', description: 'Great technology evolves with the business it serves.' },
+  { title: 'Understand the business first.', description: 'We invest time in understanding your problem, your users, and your workflows before touching any code.' },
+  { title: 'Build for production.', description: 'Intelligence without reliability is a demo. We engineer systems that work at scale, with proper testing, monitoring, and error handling.' },
+  { title: 'Integrate with existing tools.', description: 'AI that lives in a separate app gets ignored. We connect intelligence to where your team already works.' },
+  { title: 'Measure what matters.', description: 'We define success in business terms — hours saved, errors reduced, revenue enabled — not just model accuracy.' },
 ]
 
 export function About() {
@@ -24,12 +24,12 @@ export function About() {
     <>
       <SEO
         title="About Kyvanta Innovation"
-        description="Learn about Kyvanta Innovation — an engineering company that designs intelligent software, AI systems, and automation solutions for modern businesses."
+        description="Kyvanta Innovation helps businesses automate workflows, build AI agents, and create custom software that solves real operational problems. Learn about our approach."
         path="/about"
       />
       <WebPageSchema
         title="About Kyvanta Innovation"
-        description="Learn about Kyvanta Innovation — an engineering company that designs intelligent software, AI systems, and automation solutions for modern businesses."
+        description="Kyvanta Innovation helps businesses automate workflows, build AI agents, and create custom software that solves real operational problems. Learn about our approach."
         path="/about"
       />
       <section className="pt-32 sm:pt-40 pb-20 sm:pb-28 bg-white">
@@ -44,7 +44,7 @@ export function About() {
               About Kyvanta
             </span>
             <h1 className="text-4xl sm:text-5xl font-semibold text-slate-900 leading-[1.1] tracking-tight">
-              We are an engineering company built around innovation.
+              We turn complex business processes into intelligent software.
             </h1>
             <p className="mt-6 text-lg text-slate-500 leading-relaxed max-w-2xl">
               {siteData.company.description}
@@ -74,10 +74,10 @@ export function About() {
                   Kyvanta Innovation was founded on a simple observation: businesses need technology that works for them, not the other way around.
                 </p>
                 <p>
-                  Too many organizations are held back by systems that don't fit, tools that create complexity instead of reducing it, and technology decisions made without understanding the actual problem.
+                  Too many organizations are held back by systems that don't fit, tools that create complexity instead of reducing it, and AI experiments that never make it to production. The gap between what AI can do and what businesses actually need keeps growing.
                 </p>
                 <p>
-                  We built Kyvanta to be the engineering partner that bridges the gap between business needs and technical solutions. We combine deep engineering capability with genuine business understanding.
+                  We built Kyvanta to bridge that gap. We combine deep AI and engineering capability with genuine business understanding — building systems that don't just demonstrate intelligence, but actually operate inside your business.
                 </p>
               </div>
             </motion.div>
@@ -94,7 +94,7 @@ export function About() {
                     Our Mission
                   </span>
                   <p className="text-lg text-slate-700 font-medium">
-                    Build useful technology that solves meaningful problems.
+                    Build AI and software systems that solve real business problems — and actually get used.
                   </p>
                 </div>
                 <div>
@@ -102,7 +102,7 @@ export function About() {
                     Our Vision
                   </span>
                   <p className="text-lg text-slate-700 font-medium">
-                    Create intelligent systems that make technology more capable, accessible, and useful.
+                    Make intelligent automation accessible to businesses of every size — not just enterprises with unlimited budgets.
                   </p>
                 </div>
               </div>
@@ -122,10 +122,10 @@ export function About() {
             className="mb-12"
           >
             <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400 mb-4 block">
-              Engineering Philosophy
+              How We Work
             </span>
             <h2 className="text-3xl font-semibold text-slate-900 leading-tight">
-              How we approach our work.
+              Our approach to every project.
             </h2>
           </motion.div>
 
@@ -169,7 +169,7 @@ export function About() {
               What We Believe
             </span>
             <h2 className="text-3xl font-semibold text-slate-900 leading-tight">
-              Technology should be.
+              Principles that guide our work.
             </h2>
           </motion.div>
 
@@ -199,9 +199,9 @@ export function About() {
 
       <CTA
         label="Work With Us"
-        title="Let's build something that matters."
-        description="We're always interested in hearing about challenging problems and ambitious projects."
-        primaryAction={{ label: 'Start a Conversation', to: '/contact' }}
+        title="Let's discuss your challenge."
+        description="We're always interested in hearing about problems that need practical AI and software solutions."
+        primaryAction={{ label: 'Book a Strategy Call', to: '/contact' }}
         secondaryAction={{ label: 'View Our Solutions', to: '/solutions' }}
       />
     </>

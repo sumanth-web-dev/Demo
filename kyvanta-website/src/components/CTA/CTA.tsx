@@ -54,6 +54,7 @@ export function CTA({
           <div className="flex flex-wrap items-center gap-4">
             <Link
               to={primaryAction.to}
+              data-track-cta={`cta-${primaryAction.to.replace('/', '')}`}
               className="group inline-flex items-center gap-2 px-6 py-3 text-sm font-medium rounded-md bg-white text-slate-900 hover:bg-slate-100 transition-colors duration-200"
             >
               {primaryAction.label}
@@ -62,6 +63,7 @@ export function CTA({
             {secondaryAction && (
               <Link
                 to={secondaryAction.to}
+                data-track-cta={`cta-${secondaryAction.to.replace('/', '')}`}
                 className={`inline-flex items-center gap-2 px-6 py-3 text-sm font-medium rounded-md transition-colors duration-200 ${
                   dark
                     ? 'text-slate-300 hover:text-white hover:bg-slate-800'

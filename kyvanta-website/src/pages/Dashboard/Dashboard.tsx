@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard,
@@ -16,23 +16,42 @@ import {
   Server,
   CheckCircle,
   AlertCircle,
+  Filter,
+  Search,
+  ChevronDown,
+  Eye,
+  MousePointerClick,
+  TrendingUp,
 } from 'lucide-react'
 import { logout } from '../../utils/auth'
+import { getAnalytics } from '../../utils/analytics'
 import {
   sidebarItems,
   buildStats,
   systemInfo,
+  buildAnalyticsStats,
   type ActiveView,
+  type AnalyticsEvent,
 } from '../../data/dashboard'
 
 interface Submission {
   id: string
+  formType: 'contact' | 'audit'
   name: string
   email: string
   company: string
   need: string
   needLabel: string
   description: string
+  industry: string
+  problemArea?: string
+  desiredSolution?: string
+  currentProcess?: string
+  existingSoftware?: string
+  timeline?: string
+  budget?: string
+  area?: string
+  teamSize?: string
   timestamp: number
 }
 
@@ -57,10 +76,10 @@ function timeAgo(timestamp: number): string {
 
 export function Dashboard() {
   const navigate = useNavigate()
-  const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeView, setActiveView] = useState<ActiveView>('overview')
   const [submissions, setSubmissions] = useState<Submission[]>([])
+  const [analytics] = useState<AnalyticsEvent[]>(() => getAnalytics())
   const [toasts, setToasts] = useState<Toast[]>([])
   const [refreshKey, setRefreshKey] = useState(0)
 
@@ -75,14 +94,14 @@ export function Dashboard() {
   useEffect(() => {
     let cancelled = false
     fetch('/api/submissions')
-      .then((res) => res.json())
+      .then((r) => r.json())
+      .catch(() => [])
       .then((data) => {
-        if (!cancelled) setSubmissions(data)
+        if (!cancelled) setSubmissions(Array.isArray(data) ? data : [])
       })
-      .catch(() => {})
     return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshKey, location.pathname])
+  }, [refreshKey])
 
   const handleLogout = () => {
     logout()
@@ -130,7 +149,12 @@ export function Dashboard() {
     setRefreshKey((k) => k + 1)
   }
 
-  const stats = buildStats(submissions.length)
+  const stats = buildStats(
+    submissions.length,
+    submissions.filter((s) => s.formType === 'audit').length,
+    submissions.filter((s) => s.formType === 'contact').length,
+  )
+  const analyticsStats = buildAnalyticsStats(analytics)
 
   const handleNavClick = (view: ActiveView) => {
     setActiveView(view)
@@ -233,6 +257,7 @@ export function Dashboard() {
                 key="overview"
                 stats={stats}
                 submissions={submissions}
+                analyticsStats={analyticsStats}
               />
             )}
             {activeView === 'users' && (
@@ -243,8 +268,7 @@ export function Dashboard() {
                 onClearAll={handleClearAll}
               />
             )}
-            {activeView === 'projects' && <ProjectsView key="projects" />}
-            {activeView === 'system' && <SystemView key="system" />}
+            {activeView === 'settings' && <SettingsView key="settings" />}
           </AnimatePresence>
         </main>
       </div>
@@ -284,10 +308,31 @@ export function Dashboard() {
 function OverviewView({
   stats,
   submissions,
+  analyticsStats,
 }: {
   stats: ReturnType<typeof buildStats>
   submissions: Submission[]
+  analyticsStats: ReturnType<typeof buildAnalyticsStats>
 }) {
+  const industryCounts = submissions.reduce(
+    (acc, s) => {
+      acc[s.industry] = (acc[s.industry] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>,
+  )
+
+  const sortedIndustries = Object.entries(industryCounts).sort((a, b) => b[1] - a[1])
+  const maxIndustryCount = sortedIndustries.length > 0 ? sortedIndustries[0][1] : 1
+
+  const topPages = Object.entries(analyticsStats.viewsByPath)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+
+  const topCtas = Object.entries(analyticsStats.clicksByLabel)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -297,10 +342,10 @@ function OverviewView({
     >
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900">
-          Welcome back
+          Dashboard
         </h1>
         <p className="text-sm text-slate-500 mt-1">
-          Here&apos;s what&apos;s happening across your projects today.
+          Analytics and submission overview.
         </p>
       </div>
 
@@ -329,58 +374,336 @@ function OverviewView({
             <div className="text-2xl font-semibold text-slate-900">
               {stat.value}
             </div>
-            <div className="mt-1 text-xs text-emerald-600 font-medium">
+            <div className={`mt-1 text-xs font-medium ${
+              stat.changeType === 'positive' ? 'text-emerald-600' : 'text-slate-500'
+            }`}>
               {stat.change}
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Recent submissions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-white rounded-xl border border-slate-100 overflow-hidden"
-      >
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-900">
-            Recent Submissions
-          </h2>
-        </div>
-        {submissions.length === 0 ? (
-          <div className="px-5 py-12 text-center">
-            <FileText className="w-8 h-8 text-slate-300 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">
-              No submissions yet. Contact form entries will appear here.
-            </p>
+      {/* Visitor Analytics Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white rounded-xl border border-slate-100 p-5"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+              <Eye className="w-4 h-4 text-blue-500" />
+            </div>
+            <span className="text-[13px] font-medium text-slate-500">Page Views</span>
           </div>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {submissions.slice(0, 5).map((sub) => (
-              <div
-                key={sub.id}
-                className="px-5 py-3.5 flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors duration-150"
-              >
-                <div className="min-w-0">
-                  <p className="text-sm text-slate-900 truncate">{sub.name}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {sub.email} — {sub.needLabel}
-                  </p>
+          <div className="text-2xl font-semibold text-slate-900">
+            {analyticsStats.totalPageviews}
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            {analyticsStats.uniqueSessions} unique sessions
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white rounded-xl border border-slate-100 p-5"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+              <MousePointerClick className="w-4 h-4 text-purple-500" />
+            </div>
+            <span className="text-[13px] font-medium text-slate-500">CTA Clicks</span>
+          </div>
+          <div className="text-2xl font-semibold text-slate-900">
+            {analyticsStats.totalCtaClicks}
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            {analyticsStats.totalFormStarts} form starts
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.48, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white rounded-xl border border-slate-100 p-5"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-green-500" />
+            </div>
+            <span className="text-[13px] font-medium text-slate-500">Conversion</span>
+          </div>
+          <div className="text-2xl font-semibold text-slate-900">
+            {analyticsStats.conversionRate}%
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            {analyticsStats.totalFormSubmits} submissions
+          </p>
+        </motion.div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Industry Breakdown */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white rounded-xl border border-slate-100 overflow-hidden"
+        >
+          <div className="px-5 py-4 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900">
+              Submissions by Industry
+            </h2>
+          </div>
+          {sortedIndustries.length === 0 ? (
+            <div className="px-5 py-8 text-center">
+              <p className="text-sm text-slate-500">No data yet</p>
+            </div>
+          ) : (
+            <div className="p-5 space-y-3">
+              {sortedIndustries.map(([industry, count]) => (
+                <div key={industry}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium text-slate-600">
+                      {industryLabels[industry] || industry}
+                    </span>
+                    <span className="text-xs text-slate-500">{count}</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(count / maxIndustryCount) * 100}%` }}
+                      transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                      className="h-full bg-slate-900 rounded-full"
+                    />
+                  </div>
                 </div>
-                <span className="text-xs text-slate-400 whitespace-nowrap">
-                  {timeAgo(sub.timestamp)}
-                </span>
-              </div>
-            ))}
+              ))}
+            </div>
+          )}
+        </motion.div>
+
+        {/* Top Pages */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white rounded-xl border border-slate-100 overflow-hidden"
+        >
+          <div className="px-5 py-4 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900">
+              Top Pages
+            </h2>
           </div>
-        )}
-      </motion.div>
+          {topPages.length === 0 ? (
+            <div className="px-5 py-8 text-center">
+              <p className="text-sm text-slate-500">No page views tracked yet</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {topPages.map(([path, views]) => (
+                <div
+                  key={path}
+                  className="px-5 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"
+                >
+                  <span className="text-sm text-slate-700 font-mono">{path}</span>
+                  <span className="text-sm font-medium text-slate-900">{views}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Top CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white rounded-xl border border-slate-100 overflow-hidden"
+        >
+          <div className="px-5 py-4 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900">
+              Top CTA Buttons
+            </h2>
+          </div>
+          {topCtas.length === 0 ? (
+            <div className="px-5 py-8 text-center">
+              <p className="text-sm text-slate-500">No CTA clicks tracked yet</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {topCtas.map(([label, clicks]) => (
+                <div
+                  key={label}
+                  className="px-5 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"
+                >
+                  <span className="text-sm text-slate-700">{label}</span>
+                  <span className="text-sm font-medium text-slate-900">{clicks}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+
+        {/* Recent Activity */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white rounded-xl border border-slate-100 overflow-hidden"
+        >
+          <div className="px-5 py-4 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900">
+              Recent Submissions
+            </h2>
+          </div>
+          {submissions.length === 0 ? (
+            <div className="px-5 py-8 text-center">
+              <FileText className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+              <p className="text-sm text-slate-500">
+                No submissions yet.
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {submissions.slice(0, 5).map((sub) => (
+                <div
+                  key={sub.id}
+                  className="px-5 py-3.5 flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors duration-150"
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm text-slate-900 truncate">{sub.name}</p>
+                      <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded ${
+                        sub.formType === 'audit' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        {sub.formType}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {sub.needLabel}
+                    </p>
+                  </div>
+                  <span className="text-xs text-slate-400 whitespace-nowrap">
+                    {timeAgo(sub.timestamp)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </div>
     </motion.div>
   )
 }
 
+/* ─── Custom Dropdown ─────────────────────────────────── */
+
+interface DropdownOption {
+  value: string
+  label: string
+  count?: number
+}
+
+function CustomDropdown({
+  value,
+  onChange,
+  options,
+  icon: Icon,
+  placeholder,
+}: {
+  value: string
+  onChange: (val: string) => void
+  options: DropdownOption[]
+  icon: LucideIcon
+  placeholder: string
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const selected = options.find((o) => o.value === value)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 pl-3 pr-2 py-2 text-sm border border-slate-200 rounded-lg hover:border-slate-300 focus:outline-none focus:border-slate-900 transition-colors bg-white cursor-pointer min-w-[160px]"
+      >
+        <Icon className="w-4 h-4 text-slate-400 shrink-0" />
+        <span className="flex-1 text-left truncate">
+          {selected ? selected.label : placeholder}
+        </span>
+        <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden"
+          >
+            <div className="max-h-60 overflow-y-auto">
+              {options.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(opt.value)
+                    setOpen(false)
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-slate-50 transition-colors ${
+                    value === opt.value ? 'bg-slate-50 text-slate-900 font-medium' : 'text-slate-600'
+                  }`}
+                >
+                  <span>{opt.label}</span>
+                  {opt.count !== undefined && (
+                    <span className="text-xs text-slate-400">{opt.count}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 /* ─── Users (Submissions) ─────────────────────────────── */
+
+const industryLabels: Record<string, string> = {
+  operations: 'Operations',
+  technology: 'Technology',
+  'customer-service': 'Customer Service',
+  sales: 'Sales',
+  general: 'General',
+}
+
+const industryColors: Record<string, string> = {
+  operations: 'bg-blue-100 text-blue-700',
+  technology: 'bg-purple-100 text-purple-700',
+  'customer-service': 'bg-green-100 text-green-700',
+  sales: 'bg-orange-100 text-orange-700',
+  general: 'bg-slate-100 text-slate-700',
+}
 
 function UsersView({
   submissions,
@@ -392,6 +715,47 @@ function UsersView({
   onClearAll: () => void
 }) {
   const [expanded, setExpanded] = useState<string | null>(null)
+  const [filterIndustry, setFilterIndustry] = useState<string>('all')
+  const [filterFormType, setFilterFormType] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filtered = submissions.filter((s) => {
+    if (filterIndustry !== 'all' && s.industry !== filterIndustry) return false
+    if (filterFormType !== 'all' && s.formType !== filterFormType) return false
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase()
+      return (
+        s.name.toLowerCase().includes(q) ||
+        s.email.toLowerCase().includes(q) ||
+        s.company.toLowerCase().includes(q) ||
+        s.description.toLowerCase().includes(q)
+      )
+    }
+    return true
+  })
+
+  const industryCounts = submissions.reduce(
+    (acc, s) => {
+      acc[s.industry] = (acc[s.industry] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>,
+  )
+
+  const industryOptions: DropdownOption[] = [
+    { value: 'all', label: 'All Industries' },
+    ...Object.entries(industryLabels).map(([key, label]) => ({
+      value: key,
+      label,
+      count: industryCounts[key] || 0,
+    })),
+  ]
+
+  const formTypeOptions: DropdownOption[] = [
+    { value: 'all', label: 'All Forms' },
+    { value: 'contact', label: 'Contact' },
+    { value: 'audit', label: 'Audit' },
+  ]
 
   return (
     <motion.div
@@ -403,10 +767,10 @@ function UsersView({
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900">
-            Contact Submissions
+            Submissions
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            All inquiries received through the contact form.
+            {submissions.length} total · {filtered.length} shown
           </p>
         </div>
         {submissions.length > 0 && (
@@ -420,20 +784,69 @@ function UsersView({
         )}
       </div>
 
-      {submissions.length === 0 ? (
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 mb-6">
+        <div className="relative flex-1 min-w-[200px] max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search by name, email, company..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-slate-900 transition-colors"
+          />
+        </div>
+
+        <CustomDropdown
+          value={filterIndustry}
+          onChange={setFilterIndustry}
+          options={industryOptions}
+          icon={Filter}
+          placeholder="Industry"
+        />
+
+        <CustomDropdown
+          value={filterFormType}
+          onChange={setFilterFormType}
+          options={formTypeOptions}
+          icon={Tag}
+          placeholder="Form Type"
+        />
+      </div>
+
+      {/* Industry breakdown */}
+      <div className="flex flex-wrap gap-2 mb-8">
+        {Object.entries(industryCounts).map(([industry, count]) => (
+          <button
+            key={industry}
+            onClick={() => setFilterIndustry(filterIndustry === industry ? 'all' : industry)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+              filterIndustry === industry
+                ? 'bg-slate-900 text-white'
+                : `${industryColors[industry] || 'bg-slate-100 text-slate-700'} hover:opacity-80`
+            }`}
+          >
+            {industryLabels[industry] || industry}
+            <span className="opacity-70">{count}</span>
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-100 px-5 py-16 text-center">
           <FileText className="w-10 h-10 text-slate-300 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-slate-900 mb-1">
-            No submissions yet
+            No submissions found
           </h3>
           <p className="text-sm text-slate-500">
-            When someone submits the contact form, their details will appear
-            here.
+            {submissions.length === 0
+              ? 'When someone submits a form, their details will appear here.'
+              : 'Try adjusting your filters.'}
           </p>
         </div>
       ) : (
         <div className="space-y-3">
-          {submissions.map((sub, i) => (
+          {filtered.map((sub, i) => (
             <motion.div
               key={sub.id}
               initial={{ opacity: 0, y: 20 }}
@@ -462,15 +875,25 @@ function UsersView({
                       .toUpperCase()}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">
-                      {sub.name}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-slate-900 truncate">
+                        {sub.name}
+                      </p>
+                      <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded ${
+                        sub.formType === 'audit' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        {sub.formType}
+                      </span>
+                    </div>
                     <p className="text-xs text-slate-500 truncate">
                       {sub.email}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
+                  <span className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md ${industryColors[sub.industry] || 'bg-slate-100 text-slate-700'}`}>
+                    {industryLabels[sub.industry] || sub.industry}
+                  </span>
                   <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded-md">
                     <Tag className="w-3 h-3" />
                     {sub.needLabel}
@@ -510,7 +933,7 @@ function UsersView({
                               <p className="text-xs text-slate-400 mb-0.5">
                                 Company
                               </p>
-                              <p className="text-sm text-slate-900">
+                              <p className="text-sm text-sslate-900">
                                 {sub.company}
                               </p>
                             </div>
@@ -538,6 +961,84 @@ function UsersView({
                             </p>
                           </div>
                         </div>
+                        {sub.teamSize && (
+                          <div className="flex items-start gap-2.5">
+                            <Building2 className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="text-xs text-slate-400 mb-0.5">
+                                Team Size
+                              </p>
+                              <p className="text-sm text-slate-900">
+                                {sub.teamSize}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {sub.timeline && (
+                          <div className="flex items-start gap-2.5">
+                            <Clock className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="text-xs text-slate-400 mb-0.5">
+                                Timeline
+                              </p>
+                              <p className="text-sm text-slate-900">
+                                {sub.timeline}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {sub.budget && (
+                          <div className="flex items-start gap-2.5">
+                            <Tag className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="text-xs text-slate-400 mb-0.5">
+                                Budget
+                              </p>
+                              <p className="text-sm text-slate-900">
+                                {sub.budget}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {sub.desiredSolution && (
+                          <div className="flex items-start gap-2.5">
+                            <Tag className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="text-xs text-slate-400 mb-0.5">
+                                Desired Solution
+                              </p>
+                              <p className="text-sm text-slate-900">
+                                {sub.desiredSolution}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {sub.currentProcess && (
+                          <div className="flex items-start gap-2.5">
+                            <FileText className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="text-xs text-slate-400 mb-0.5">
+                                Current Process
+                              </p>
+                              <p className="text-sm text-slate-900">
+                                {sub.currentProcess}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {sub.existingSoftware && (
+                          <div className="flex items-start gap-2.5">
+                            <Server className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="text-xs text-slate-400 mb-0.5">
+                                Existing Software
+                              </p>
+                              <p className="text-sm text-slate-900">
+                                {sub.existingSoftware}
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex items-start gap-2.5 mb-4">
@@ -576,15 +1077,11 @@ function UsersView({
   )
 }
 
-/* ─── Projects (Placeholder) ──────────────────────────── */
+/* ─── Settings ────────────────────────────────────────── */
 
-function ProjectsView() {
-  const projects = [
-    { name: 'AI Platform v2', status: 'In Progress', progress: 72 },
-    { name: 'Client Portal', status: 'Completed', progress: 100 },
-    { name: 'IoT Dashboard', status: 'In Progress', progress: 45 },
-    { name: 'Voice Assistant MVP', status: 'Planning', progress: 15 },
-  ]
+function SettingsView() {
+  const [emailNotifications, setEmailNotifications] = useState(true)
+  const [autoReply, setAutoReply] = useState(false)
 
   return (
     <motion.div
@@ -595,96 +1092,78 @@ function ProjectsView() {
     >
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900">
-          Projects
+          Settings
         </h1>
         <p className="text-sm text-slate-500 mt-1">
-          Overview of active and recent projects.
+          Configure your dashboard preferences.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {projects.map((project, i) => (
-          <motion.div
-            key={project.name}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.4,
-              delay: i * 0.08,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            className="bg-white rounded-xl border border-slate-100 p-5"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-slate-900">
-                {project.name}
-              </h3>
-              <span
-                className={`text-xs font-medium px-2.5 py-1 rounded-md ${
-                  project.status === 'Completed'
-                    ? 'bg-emerald-50 text-emerald-600'
-                    : project.status === 'Planning'
-                      ? 'bg-amber-50 text-amber-600'
-                      : 'bg-blue-50 text-blue-600'
+      <div className="space-y-6">
+        {/* Notifications */}
+        <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900">Notifications</h2>
+          </div>
+          <div className="p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-900">Email Notifications</p>
+                <p className="text-xs text-slate-500">Get notified when someone submits a form</p>
+              </div>
+              <button
+                onClick={() => setEmailNotifications(!emailNotifications)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  emailNotifications ? 'bg-slate-900' : 'bg-slate-200'
                 }`}
               >
-                {project.status}
-              </span>
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    emailNotifications ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
             </div>
-            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-slate-900 rounded-full transition-all duration-500"
-                style={{ width: `${project.progress}%` }}
-              />
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-900">Auto-Reply</p>
+                <p className="text-xs text-slate-500">Send automatic confirmation email</p>
+              </div>
+              <button
+                onClick={() => setAutoReply(!autoReply)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  autoReply ? 'bg-slate-900' : 'bg-slate-200'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    autoReply ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
             </div>
-            <p className="text-xs text-slate-500 mt-2">
-              {project.progress}% complete
-            </p>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  )
-}
-
-/* ─── System (Placeholder) ────────────────────────────── */
-
-function SystemView() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900">
-          System
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Infrastructure and deployment status.
-        </p>
-      </div>
-
-      <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-          <Server className="w-4 h-4 text-slate-500" />
-          <h2 className="text-sm font-semibold text-slate-900">
-            System Information
-          </h2>
+          </div>
         </div>
-        <div className="divide-y divide-slate-100">
-          {systemInfo.map((item) => (
-            <div
-              key={item.label}
-              className="px-5 py-3.5 flex items-center justify-between"
-            >
-              <span className="text-sm text-slate-500">{item.label}</span>
-              <span className="text-sm font-medium text-slate-900">
-                {item.value}
-              </span>
-            </div>
-          ))}
+
+        {/* System Info */}
+        <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+            <Server className="w-4 h-4 text-slate-500" />
+            <h2 className="text-sm font-semibold text-slate-900">System Information</h2>
+          </div>
+          <div className="divide-y divide-slate-100">
+            {systemInfo.map((item) => (
+              <div
+                key={item.label}
+                className="px-5 py-3.5 flex items-center justify-between"
+              >
+                <span className="text-sm text-slate-500">{item.label}</span>
+                <span className="text-sm font-medium text-slate-900">
+                  {item.value}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </motion.div>

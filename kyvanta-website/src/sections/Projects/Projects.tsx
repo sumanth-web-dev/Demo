@@ -8,9 +8,9 @@ export function Projects() {
     <section className="py-24 sm:py-32 bg-slate-50">
       <Container>
         <SectionHeading
-          label="Selected Capabilities"
-          title="Examples of what we can create."
-          description="Selected projects showcasing our approach and technical capabilities."
+          label="Selected Work"
+          title="Examples of what we build."
+          description="Selected projects showcasing our approach to solving real business challenges with AI and software."
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

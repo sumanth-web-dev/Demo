@@ -10,11 +10,11 @@ export function Solutions() {
       <Container>
         <SectionHeading
           label="What We Build"
-          title="We build technology around real business needs."
-          description="Each solution is designed to solve a specific set of business challenges with the right technology."
+          title="Solutions designed around real business needs."
+          description="Each solution is built to solve a specific set of operational challenges with the right technology."
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {solutions.map((solution, index) => (
             <SolutionItem key={solution.id} solution={solution} index={index} />
           ))}

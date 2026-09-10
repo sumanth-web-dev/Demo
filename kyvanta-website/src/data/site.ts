@@ -2,39 +2,54 @@ export const siteData = {
   company: {
     name: 'Kyvanta Innovation Pvt. Ltd.',
     shortName: 'Kyvanta',
-    tagline: 'Engineering the Intelligence of Tomorrow.',
+    tagline: 'AI, automation and software built around how your business actually works.',
     description:
-      'We design and build intelligent technology that helps businesses solve complex problems, automate operations, and create better digital experiences.',
+      'We help businesses automate workflows, build intelligent systems, and create custom AI-powered software that solves real operational problems.',
+  },
+  positioning: {
+    headline: 'Turn complex business processes into intelligent software.',
+    subheadline:
+      'We design and build AI systems, automation workflows, and custom software that fit how your team actually works — not how a generic tool thinks you should work.',
   },
   capabilities: [
-    'AI & Intelligent Systems',
-    'Software Engineering',
-    'Intelligent Automation',
-    'Digital Platforms',
-    'Voice & Conversational AI',
-    'Edge & IoT',
+    'AI Automation',
+    'AI Agents',
+    'Custom AI Applications',
+    'Conversational AI',
+    'AI Integration',
+    'Intelligent Document Processing',
+    'Custom Software',
   ],
   trustStrip: {
-    label: 'From idea to production-ready technology.',
+    label: 'From opportunity audit to production-ready AI systems.',
     capabilities: [
-      'AI',
-      'SOFTWARE ENGINEERING',
-      'AUTOMATION',
-      'DIGITAL PLATFORMS',
-      'EDGE TECHNOLOGY',
+      'AI AUTOMATION',
+      'AI AGENTS',
+      'CUSTOM SOFTWARE',
+      'AI INTEGRATION',
+      'DOCUMENT AI',
     ],
   },
   seo: {
-    title: 'Kyvanta Innovation | AI, Software & Intelligent Technology',
+    title: 'Kyvanta Innovation | AI, Automation & Custom Software Engineering',
     description:
-      'Kyvanta Innovation builds intelligent software, AI systems, automation solutions, and scalable digital technology for modern businesses.',
+      'Kyvanta Innovation helps businesses automate workflows, build AI agents, and create custom software that solves real operational problems. AI automation, AI agents, and intelligent systems for SMEs and startups.',
   },
 }
 
 export const navigation = [
-  { label: 'About', path: '/about' },
   { label: 'Solutions', path: '/solutions' },
-  { label: 'Technology', path: '/technology' },
-  { label: 'Projects', path: '/projects' },
+  { label: 'Industries', path: '/industries' },
+  { label: 'Work', path: '/projects' },
+  { label: 'Insights', path: '/insights' },
+  { label: 'About', path: '/about' },
+]
+
+export const secondaryNavigation = [
+  { label: 'About', path: '/about' },
+  { label: 'AI Audit', path: '/audit' },
   { label: 'Contact', path: '/contact' },
+  { label: 'Blog', path: '/insights' },
+  { label: 'Privacy', path: '/privacy' },
+  { label: 'Terms', path: '/terms' },
 ]

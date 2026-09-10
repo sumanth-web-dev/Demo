@@ -38,6 +38,11 @@ export function Footer() {
                     </Link>
                   </li>
                 ))}
+                <li>
+                  <Link to="/contact" className="text-sm hover:text-white transition-colors duration-200">
+                    Contact
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -60,34 +65,30 @@ export function Footer() {
               </ul>
             </div>
 
-            {/* Contact */}
+            {/* Resources */}
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mb-4">
-                Get in Touch
+                Resources
               </h4>
               <ul className="space-y-2.5">
                 <li>
-                  <Link
-                    to="/contact"
-                    className="text-sm hover:text-white transition-colors duration-200 inline-flex items-center gap-1"
-                  >
-                    Start a Project
+                  <Link to="/audit" className="text-sm hover:text-white transition-colors duration-200 inline-flex items-center gap-1">
+                    AI Opportunity Audit
                     <ArrowUpRight className="w-3 h-3" />
                   </Link>
                 </li>
                 <li>
-                  <a
-                    href="mailto:kyvanta.innovations@gmail.com"
-                    className="text-sm hover:text-white transition-colors duration-200"
-                  >
+                  <Link to="/insights" className="text-sm hover:text-white transition-colors duration-200">
+                    Insights
+                  </Link>
+                </li>
+                <li>
+                  <a href="mailto:kyvanta.innovations@gmail.com" className="text-sm hover:text-white transition-colors duration-200">
                     kyvanta.innovations@gmail.com
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="tel:+919480700048"
-                    className="text-sm hover:text-white transition-colors duration-200"
-                  >
+                  <a href="tel:+919480700048" className="text-sm hover:text-white transition-colors duration-200">
                     +91 9480700048
                   </a>
                 </li>
@@ -103,9 +104,12 @@ export function Footer() {
               &copy; {new Date().getFullYear()} {siteData.company.name}. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
-              <span className="text-xs text-slate-600">
-                {siteData.company.tagline}
-              </span>
+              <Link to="/privacy" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+                Privacy Policy
+              </Link>
+              <Link to="/terms" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+                Terms of Service
+              </Link>
             </div>
           </div>
         </div>

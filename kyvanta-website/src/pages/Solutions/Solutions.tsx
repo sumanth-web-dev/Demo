@@ -5,7 +5,7 @@ import { Container } from '../../components/Container/Container'
 import { CTA } from '../../components/CTA/CTA'
 import { SEO, WebPageSchema } from '../../components/SEO/SEO'
 import { solutions } from '../../data/solutions'
-import { siteData } from '../../data/site'
+import { pricingModels } from '../../data/pricing'
 
 export function SolutionsPage() {
   const location = useLocation()
@@ -25,12 +25,12 @@ export function SolutionsPage() {
     <>
       <SEO
         title="AI, Automation & Software Solutions"
-        description="Explore Kyvanta's solutions — AI & intelligent systems, intelligent automation, custom software, digital platforms, voice AI, and edge IoT technology."
+        description="Explore Kyvanta's solutions — AI automation, AI agents, custom AI applications, conversational AI, AI integration, intelligent document processing, and custom software development."
         path="/solutions"
       />
       <WebPageSchema
         title="AI, Automation & Software Solutions"
-        description="Explore Kyvanta's solutions — AI & intelligent systems, intelligent automation, custom software, digital platforms, voice AI, and edge IoT technology."
+        description="Explore Kyvanta's solutions — AI automation, AI agents, custom AI applications, conversational AI, AI integration, intelligent document processing, and custom software development."
         path="/solutions"
       />
       <section className="pt-32 sm:pt-40 pb-20 sm:pb-28 bg-white">
@@ -48,7 +48,7 @@ export function SolutionsPage() {
               Technology designed around your business.
             </h1>
             <p className="mt-6 text-lg text-slate-500 leading-relaxed max-w-2xl">
-              {siteData.company.description}
+              We help businesses automate workflows, build AI agents, and create custom software that solves real operational problems. Each solution is built to fit how your team actually works.
             </p>
           </motion.div>
         </Container>
@@ -92,10 +92,10 @@ export function SolutionsPage() {
                 {/* Right: Details */}
                 <div className="lg:col-span-8 space-y-8">
                   {[
-                    { label: 'The Challenge', text: solution.challenge },
-                    { label: 'Our Approach', text: solution.approach },
-                    { label: 'What We Build', text: solution.whatWeBuild },
-                    { label: 'Business Value', text: solution.businessValue },
+                    { label: 'The Problem', text: solution.customerProblem },
+                    { label: 'Our Solution', text: solution.solution },
+                    { label: 'Who Needs This', text: solution.whoNeedsIt },
+                    { label: 'Business Outcome', text: solution.businessOutcome },
                   ].map((item, i) => (
                     <motion.div
                       key={item.label}
@@ -124,6 +124,25 @@ export function SolutionsPage() {
                     transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-400 mb-3">
+                      Use Cases
+                    </h3>
+                    <ul className="space-y-2">
+                      {solution.useCases.map((useCase) => (
+                        <li key={useCase} className="flex items-start gap-2 text-sm text-slate-600">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
+                          {useCase}
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-400 mb-3">
                       Technology
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -137,6 +156,29 @@ export function SolutionsPage() {
                       ))}
                     </div>
                   </motion.div>
+
+                  {(() => {
+                    const pricing = pricingModels.find((p) => p.serviceId === solution.id)
+                    if (!pricing) return null
+                    return (
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        className="p-5 rounded-xl bg-slate-50 border border-slate-100"
+                      >
+                        <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-400 mb-2">
+                          Pricing Approach
+                        </h3>
+                        <p className="text-sm font-medium text-slate-900 mb-1">{pricing.model}</p>
+                        <p className="text-sm text-slate-500 leading-relaxed mb-2">{pricing.description}</p>
+                        <p className="text-xs text-slate-400">
+                          Entry point: {pricing.entryPoint}
+                        </p>
+                      </motion.div>
+                    )
+                  })()}
                 </div>
               </div>
             </Container>
@@ -148,8 +190,8 @@ export function SolutionsPage() {
         label="Next Step"
         title="Discuss your challenge."
         description="Tell us about the problem you're trying to solve, and we'll help you find the right approach."
-        primaryAction={{ label: 'Start the Conversation', to: '/contact' }}
-        secondaryAction={{ label: 'View Technology', to: '/technology' }}
+        primaryAction={{ label: 'Book an AI Strategy Call', to: '/contact' }}
+        secondaryAction={{ label: 'View Our Work', to: '/projects' }}
         dark
       />
     </>

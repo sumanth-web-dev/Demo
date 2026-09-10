@@ -84,10 +84,16 @@ export function Navbar() {
 
             <div className="hidden md:flex items-center gap-3">
               <Link
+                to="/audit"
+                className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-200"
+              >
+                Free Audit
+              </Link>
+              <Link
                 to="/contact"
                 className="group inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-md hover:bg-slate-800 transition-colors duration-200"
               >
-                Start a Project
+                Book a Strategy Call
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
               </Link>
             </div>
@@ -143,12 +149,18 @@ export function Navbar() {
                       </Link>
                     )
                   })}
+                  <Link
+                    to="/audit"
+                    className="block px-4 py-3 text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors duration-150"
+                  >
+                    Free AI Audit
+                  </Link>
                   <div className="pt-3 px-4">
                     <Link
                       to="/contact"
                       className="flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-medium text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-colors duration-200"
                     >
-                      Start a Project
+                      Book a Strategy Call
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
