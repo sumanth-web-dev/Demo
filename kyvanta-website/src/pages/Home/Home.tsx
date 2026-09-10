@@ -8,6 +8,7 @@ import { WhyNotChatGPT } from '../../sections/WhyNotChatGPT/WhyNotChatGPT'
 import { AIAgentsExplainer } from '../../sections/AIAgentsExplainer/AIAgentsExplainer'
 import { Process } from '../../sections/Process/Process'
 import { Projects } from '../../sections/Projects/Projects'
+import { ProjectCTA } from '../../sections/FinalCTA/ProjectCTA'
 import { Trust } from '../../sections/Trust/Trust'
 import { FinalCTA } from '../../sections/FinalCTA/FinalCTA'
 
@@ -30,6 +31,7 @@ export function Home() {
       <AIAgentsExplainer />
       <Process />
       <Projects />
+      <ProjectCTA />
       <Trust />
       <FinalCTA />
     </>

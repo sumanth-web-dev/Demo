@@ -140,7 +140,7 @@ export interface Certification {
 }
 
 export const certifications: Certification[] = [
-  { name: 'NEEDS BUSINESS INPUT - Add certifications if applicable' },
+  { name: 'NEEDS BUSINESS INPUT - Add certifications if applicable', issuer: 'NEEDS BUSINESS INPUT' },
   // --- REFERENCE DATA FROM COMPETITOR ANALYSIS (InfySkill certifications) ---
   // { name: 'ISO Certified', issuer: 'ISO', year: '2024' },
   // { name: 'DPIIT Startup India', issuer: 'Government of India', year: '2024' },

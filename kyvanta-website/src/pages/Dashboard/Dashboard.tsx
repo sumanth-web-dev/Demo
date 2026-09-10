@@ -22,6 +22,7 @@ import {
   Eye,
   MousePointerClick,
   TrendingUp,
+  type LucideIcon,
 } from 'lucide-react'
 import { logout } from '../../utils/auth'
 import { getAnalytics } from '../../utils/analytics'

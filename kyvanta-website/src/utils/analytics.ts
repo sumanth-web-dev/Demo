@@ -19,7 +19,7 @@ function get_session_id(): string {
 
 interface AnalyticsEvent {
   id: string
-  type: string
+  type: 'pageview' | 'cta_click' | 'form_start' | 'form_submit'
   path: string
   label?: string
   timestamp: number
@@ -49,7 +49,7 @@ function storeEvent(event: AnalyticsEvent) {
   }
 }
 
-function track(type: string, path: string, label?: string) {
+function track(type: 'pageview' | 'cta_click' | 'form_start' | 'form_submit', path: string, label?: string) {
   storeEvent({
     id: Math.random().toString(36).substring(2) + Date.now().toString(36),
     type,
